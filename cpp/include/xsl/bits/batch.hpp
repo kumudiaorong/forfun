@@ -21,10 +21,10 @@ namespace batch {
     return 0;
   }
   //
-  template <class CIter1, class CIter2>
-  constexpr int_8 compare(CIter1 first1, CIter1 last1, CIter2 first2, CIter1 last2) {
-    return 0;
-  }
+  // template <class CIter1, class CIter2>
+  // constexpr int_8 compare(CIter1 first1, CIter1 last1, CIter2 first2, CIter1 last2) {
+  // return 0;
+  // }
   //
   template <class CIter1, class CIter2>
   constexpr void copy(CIter1 dest, CIter2 src, size_t size) {
@@ -33,7 +33,8 @@ namespace batch {
       memcpy(dest, src, size * sizeof(val_type));
     else {
       while(size-- != 0) {
-        memcpy(XSL addr(*dest), XSL addr(*src), sizeof(val_type));
+        *dest = *src;
+        // memcpy(XSL addr(*dest), XSL addr(*src), sizeof(val_type));
         ++src;
         ++dest;
       }

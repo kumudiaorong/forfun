@@ -3,8 +3,10 @@ crc:c
 
 cr:c
 	./main
-
+Path=~/work/forfun/cpp
+FLAGS= -Wall -Wextra -std=c++20 -fdiagnostics-color=always#-Werror
+DYNA= -lz -lssl -lpthread -lcrypto -ldl
 g:
-	/usr/bin/g++ -std=c++20 -fdiagnostics-color=always -I /home/kmdr/work/lib/cpp/include -L /home/kmdr/work/lib/cpp/stat -g /home/kmdr/work/lib/cpp/main.cpp -lz -lssl -lpthread -lcrypto -ldl -o /home/kmdr/work/lib/cpp/main
+	/usr/bin/g++ $(FLAGS) -I $(Path)/include -L $(Path)/stat -g $(Path)/main.cpp $(DYNA) -o $(Path)/main
 c:
-	clang -std=c++20 -fcolor-diagnostics -I /home/kmdr/work/lib/cpp/include -L /home/kmdr/work/lib/cpp/stat -g /home/kmdr/work/lib/cpp/main.cpp -lstdc++ -lz -lssl -lpthread -lcrypto -ldl -o /home/kmdr/work/lib/cpp/main
+	clang $(FLAGS) -I $(Path)/include -L $(Path)/stat -g $(Path)/main.cpp -lstdc++ $(DYNA) -o $(Path)/main

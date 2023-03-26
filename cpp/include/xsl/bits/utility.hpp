@@ -94,7 +94,7 @@ constexpr void swap(Val& Left, Val& Right) {
   Right = as_rreference(Tmp);
 }
 template <class... Vals>
-constexpr void unfold(Vals&&...args) {}
+constexpr void unfold(Vals&&...) {}
 template <class T, class... Ts, class Ret_Pred = conjunction>
 constexpr bool equal(const T& This, const T& Second, Ts&&...Rest, Ret_Pred RP) {
   return RP(equal<T>(This, Second), equal<T>(This, Rest...));

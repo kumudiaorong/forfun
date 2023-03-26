@@ -63,8 +63,8 @@ public:
   constexpr vector(vector&& ano) noexcept
     : Alc(as_rreference(ano.Alc))
     , Head(ano.Head)
-    , Cap(ano.Cap)
-    , Size(ano.Size) {
+    , Size(ano.Size)
+    , Cap(ano.Cap) {
     ano.Head = nullptr;
   }
   //
@@ -296,7 +296,8 @@ protected:
   // default_allocator<_Val, _SizeType> Alc;
   alloc_type Alc;
   val_type *Head;
-  size_type Size, Cap;
+  size_type Size;
+  size_type Cap;
   //
   constexpr val_type *erase(const val_type *where, size_type count) {
     auto wh = const_cast<val_type *>(where);

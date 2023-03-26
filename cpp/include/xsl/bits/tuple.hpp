@@ -73,7 +73,7 @@ public:
   constexpr tuple& operator=(tuple&& t) = default;
   constexpr tuple& operator=(const tuple&) = default;
   constexpr tuple(tag_store) {}
-  constexpr bool operator==(const tuple& ano) { return true; }
+  constexpr bool operator==(const tuple&) { return true; }
 };
 template <typename... Vals>
 tuple(Vals...) -> tuple<Vals...>;

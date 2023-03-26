@@ -27,7 +27,7 @@ namespace ranges {
       constexpr vlr_node()
         : vlr_node(nullptr, nullptr) {}
       constexpr vlr_node(const vlr_node& ano) = default;
-      constexpr virtual void *impl(CMD cmd = COPY, void *arg = nullptr) { return nullptr; }
+      constexpr virtual void *impl(CMD cmd = COPY, void *arg = nullptr) = 0;
       //
       constexpr virtual ~vlr_node(){};
     };

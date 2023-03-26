@@ -1,5 +1,4 @@
 CompileFlags: # Tweak the parse settings
-  Add: [-I /home/kmdr/work/lib/cpp/include, -L /home/kmdr/work/lib/cpp/stat] # treat all files as C++, enable more warnings
   Compiler: clang # Change argv[0] of compile flags to `clang++`
 Diagnostics:
   ClangTidy:

@@ -429,7 +429,7 @@ public:
     Ano.Cap = 0;
   }
   //
-  constexpr fixed_allocator(const fixed_allocator& Ano)
+  constexpr fixed_allocator(const fixed_allocator&)
     : fixed_allocator() {}
   //
   constexpr fixed_allocator& operator=(fixed_allocator&& Ano) {
@@ -441,7 +441,7 @@ public:
     return *this;
   }
   //
-  constexpr fixed_allocator& operator=(const fixed_allocator& Ano) { return *this; }
+  constexpr fixed_allocator& operator=(const fixed_allocator&) { return *this; }
   //
   constexpr Val_T *addr(const Addr_T& Addr) const { return Addr->ptr(); }
   //

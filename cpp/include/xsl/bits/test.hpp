@@ -92,9 +92,9 @@ namespace test {
     }
     constexpr bool operator!=(const test_p& Ano) { return *Ptr != *Ano.Ptr; }
     constexpr bool operator==(const test_p& Ano) { return *Ptr == *Ano.Ptr; }
-    void test_func00(test_p t) { PROC_PRINT(void _test_p(test_p t)); }
-    void test_func01(test_p t) const { PROC_PRINT(void _test_p(test_p t) const); }
-    void test_func02(test_p t) & { PROC_PRINT(void _test_p(test_p t)); }
+    void test_func00(test_p) { PROC_PRINT(void _test_p(test_p t)); }
+    void test_func01(test_p) const { PROC_PRINT(void _test_p(test_p t) const); }
+    void test_func02(test_p) & { PROC_PRINT(void _test_p(test_p t)); }
     operator int() { return *Ptr; }
     ~test_p() {
       PROC_PRINT(~test_p());
