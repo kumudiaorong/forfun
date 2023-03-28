@@ -2,7 +2,7 @@
 #ifndef XSL_CONTAINER
 #define XSL_CONTAINER
 
-#include <xsl/bits/iterator.hpp>
+#include <xsl/bits/iter.hpp>
 #include <xsl/bits/allocator.hpp>
 XSL_BEGIN
 

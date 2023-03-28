@@ -13,10 +13,10 @@ struct pair {
   // clang-format on
 	first_type first;
 	second_type second;
-	pair():first(), second() {}
-	pair(const pair&) = default;
+	constexpr pair():first(), second() {}
+	constexpr pair(const pair&) = default;
 	template<class _First_, class _Second_, ts::enable_construct<pair, _First_> = 0>
-	pair(_First_&& _first, _Second_&& _second): first(forward<_First_>(_first)), second(forward<_Second_>(_second)) {}
+	constexpr pair(_First_&& _first, _Second_&& _second): first(forward<_First_>(_first)), second(forward<_Second_>(_second)) {}
 };
 template<class _Pair>
 class set_pair {

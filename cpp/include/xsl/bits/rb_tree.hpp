@@ -141,10 +141,10 @@ protected:
 public:
   constexpr rb_tree()
     : Alc()
-    , Ek()
-    , Comp()
     , Head(Alc.allocate(sizeof(node_type)))
-    , Size() {
+    , Size()
+    , Ek()
+    , Comp() {
     Head->Next[0] = Head->Next[1] = Head;
     Head->Next[2] = nullptr;
     Head->Color = impl_rb_tree::color::Null;
@@ -163,10 +163,10 @@ public:
   //
   constexpr rb_tree(rb_tree&& ano)
     : Alc(as_rreference(ano.Alc))
-    , Ek()
-    , Comp()
     , Head(ano.Head)
-    , Size(ano.Size) {
+    , Size(ano.Size)
+    , Ek()
+    , Comp() {
     ano.Head = nullptr;
     ano.Size = 0;
   }
@@ -202,32 +202,14 @@ public:
     auto k = get_comp_val(key);
     node_type *ptr = node_lower_bound(Head->Next[2], k);
     size_type c{0};
-    while(ptr != Head && !Comp(k, Ek(ptr->Val))) {
-      node_type *child = ptr;
-      ptr = next(ptr);
+    while(ptr != Head && !Comp(k, get_comp_val(Ek(ptr->Val)))) {
+      ptr = erase_node(ptr);
       ++c;
-      if(child->Next[0] == nullptr) {
-        if(Head->Next[0] == child) Head->Next[0] = child->Next[2];
-        if(Head->Next[1] == child) Head->Next[1] = child->Next[1 + (child->Next[1] == nullptr)];
-        remove_extremum_node(child, 1);
-      } else {
-        node_type *Repl = prev(child);
-        if(Head->Next[0] == child) Head->Next[0] = Repl;
-        remove_extremum_node(Repl, 0);
-        Repl->Next[0] = child->Next[0];
-        Repl->Next[1] = child->Next[1];
-        Repl->Next[2] = child->Next[2];
-        if(Repl->Next[0] != nullptr) Repl->Next[0]->Next[2] = Repl;
-        if(Repl->Next[1] != nullptr) Repl->Next[1]->Next[2] = Repl;
-        if(Repl->Next[2] != nullptr) Repl->Next[2]->Next[Repl->Next[2]->rela(child)] = Repl;
-        Repl->Color = child->Color;
-      }
-      Alc.deallocate(destruct_at(child));
-      --Size;
     }
     return c;
   }
   //
+  constexpr iter erase(citer iter) { return {erase_node(iter.Ptr)}; }
   template <class Key>
   constexpr val_type& at(const Key& key) {
     node_type *bound = node_lower_bound(Head->Next[2], (key));
@@ -305,13 +287,35 @@ protected:
     Head->Next[2]->Color = impl_rb_tree::color::Black;
     return child;
   }
+  constexpr node_type *erase_node(node_type *where) {
+    node_type *n = next(where);
+    if(where->Next[0] == nullptr) {
+      if(Head->Next[0] == where) Head->Next[0] = where->Next[2];
+      if(Head->Next[1] == where) Head->Next[1] = where->Next[1 + (where->Next[1] == nullptr)];
+      remove_extremum_node(where, 1);
+    } else {
+      node_type *Repl = prev(where);
+      if(Head->Next[0] == where) Head->Next[0] = Repl;
+      remove_extremum_node(Repl, 0);
+      Repl->Next[0] = where->Next[0];
+      Repl->Next[1] = where->Next[1];
+      Repl->Next[2] = where->Next[2];
+      if(Repl->Next[0] != nullptr) Repl->Next[0]->Next[2] = Repl;
+      if(Repl->Next[1] != nullptr) Repl->Next[1]->Next[2] = Repl;
+      if(Repl->Next[2] != nullptr) Repl->Next[2]->Next[Repl->Next[2]->rela(where)] = Repl;
+      Repl->Color = where->Color;
+    }
+    Alc.deallocate(destruct_at(where));
+    --Size;
+    return n;
+  }
   //
   template <class Key>
   constexpr null_node_description_type null_lower_bound(node_type *start, const Key& key) {
     node_type *Parent = start;
     bool cRela{0};
     while(start != nullptr) {
-      cRela = Comp(Ek(start->Val), key);
+      cRela = Comp(get_comp_val(Ek(start->Val)), key);
       Parent = start;
       start = start->Next[cRela];
     }
@@ -320,7 +324,7 @@ protected:
   //<Ptr,[0,1]>	:Ptr is parent,num is relationship
   template <class Key>
   constexpr bool lower_bound_equal(node_type *bound, const Key& key) {
-    return !Comp(key, Ek(bound->Val));
+    return !Comp(key, get_comp_val(Ek(bound->Val)));
   }
   //
   template <class Key>
@@ -328,7 +332,7 @@ protected:
     node_type *Parent = start;
     bool CRela{1};
     while(start != nullptr) {
-      CRela = !Comp(key, Ek(start->Val));
+      CRela = !Comp(key, get_comp_val(Ek(start->Val)));
       Parent = start;
       start = start->Next[CRela];
     }
@@ -337,7 +341,7 @@ protected:
   //
   template <class Key>
   constexpr bool upper_bound_equal(node_type *bound, const Key& key) {
-    return !Comp(Ek(bound->Val), key);
+    return !Comp(get_comp_val(Ek(bound->Val)), key);
   }
   //
   constexpr node_type *pre_node(const null_node_description_type& nnd) {

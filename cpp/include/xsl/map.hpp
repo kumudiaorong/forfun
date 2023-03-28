@@ -56,52 +56,54 @@ public:
     return {this->insert_node(nnd, ptr), true};
   }
 };
-/*
-#include <xsl/bits/xsl_test.h>
-#include <xsl/map.h>
+// #include <iostream>
+// #include <random>
+// #include <vector>
+// #include <xsl/bits/test.hpp>
+// #include <xsl/map.hpp>
 
-#include <iostream>
-#include <random>
-#include <vector>
-
-using namespace xsl;
-struct comp {
-  constexpr bool operator()(const test_p& l, const test_p& r) { return *l.Ptr < *r.Ptr; }
-};
-template <class _Ctr>
-void print_map(_Ctr& Ctr) {
-  // for (auto && c : Ctr) {
-  // std::cout << *c.first.Ptr << '\t'; //<< ':' << (c->Color ==
-  // rb_tree_color::Red ? "R\t" : "B\t");
-  // }
-  // puts("");
-  for(auto i = Ctr.begin(); i != Ctr.end(); ++i) {
-    std::cout << i.Ptr->Val.second << ':' << (i.Ptr->Color == rb_tree_color::Red ? "R\t" : "B\t");
-  }
-  puts("");
-}
-int main() {
-  std::random_device r;
-  std::default_random_engine e(r());
-  std::uniform_int_distribution<int> uid(1, 1000000);
-  map<test_p, int, comp> rt00{};
-  std::vector<int> sto;
-  int c = 2;
-  while(c-- > 0) {
-    for(int i = 0; i < 100000; ++i) {
-      int k = uid(e);
-      if(rt00.try_emplace(k, k).second) sto.push_back(k);
-      // if (i < 10)
-      // print_map(rt00);
-    }
-    std::cout << rt00.size() << " begin" << std::endl;
-    while(rt00.size())
-      rt00.erase(sto[rt00.size() - 1]);
-    sto.clear();
-    std::cout << rt00.size() << " end" << std::endl;
-  }
-}
-*/
+// using namespace xsl;
+// struct comp {
+//   constexpr bool operator()(const test::test_p& l, const test::test_p& r) { return *l.Ptr < *r.Ptr; }
+// };
+// template <class _Ctr>
+// void print_map(_Ctr& Ctr) {
+//   // for (auto && c : Ctr) {
+//   // std::cout << *c.first.Ptr << '\t'; //<< ':' << (c->Color ==
+//   // rb_tree_color::Red ? "R\t" : "B\t");
+//   // }
+//   // puts("");
+//   for(auto i = Ctr.begin(); i != Ctr.end(); ++i) {
+//     std::cout << i.Ptr->Val.second << ':' << (i.Ptr->Color == impl_rb_tree::color::Red ? "R\t" : "B\t");
+//   }
+//   puts("");
+// }
+// int main() {
+//   std::random_device r;
+//   std::default_random_engine e(r());
+//   std::uniform_int_distribution<int> uid(1, 1000000);
+//   map<test::test_p, int, comp> rt00{};
+//   std::vector<int> sto;
+//   int c = 2;
+//   while(c-- > 0) {
+//     for(int i = 0; i < 100000; ++i) {
+//       int k = uid(e);
+//       if(rt00.try_emplace(k, k).second) sto.push_back(k);
+//       // if (i < 10)
+//       // print_map(rt00);
+//     }
+//     std::cout << rt00.size() << " begin" << std::endl;
+//     while(rt00.size()) {
+//       if(rt00.size() % 2 == 0)
+//         rt00.erase(sto[rt00.size() - 1]);
+//       else {
+//         rt00.erase(rt00.find(sto[rt00.size() - 1]));
+//       }
+//     }
+//     sto.clear();
+//     std::cout << rt00.size() << " end" << std::endl;
+//   }
+// }
 template <class _Key, class _Val, class _Comp = fctor::less<_Key>, class _Alloc = default_allocator<int>>
 class multimap : public rb_tree<map_traits<_Key, _Val, _Comp, _Alloc>> {
 public:

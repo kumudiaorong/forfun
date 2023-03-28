@@ -1,66 +1,56 @@
 #pragma once
-#ifndef XSL_VECTOR
-#define XSL_VECTOR
+#ifndef XSL_HEAP
+#define XSL_HEAP
 #include <initializer_list>
 #include <xsl/bits/allocator.hpp>
 #include <xsl/bits/batch.hpp>
 #include <xsl/bits/compare.hpp>
 #include <xsl/bits/container.hpp>
 #include <xsl/bits/def.hpp>
-#include <xsl/bits/iter.hpp>
+#include <xsl/bits/iterator.hpp>
 #include <xsl/bits/pf/memory.hpp>
 #include <xsl/bits/utility.hpp>
 
 XSL_BEGIN
-template <class _Val, class _Alloc = default_allocator<_Val>>
-class vector {
+template <class _Ctr>
+class heap {
   //
 public:
   // clang-format off
-	typedef _Val 								              val_type;
-	typedef _Alloc 								            alloc_type;
-	typedef size_t 								            size_type;
+	typedef _Ctr 								              storage_type;
+	typedef typename _Ctr::val_type 				val_type;
+	typedef typename _Ctr::alloc_type 				alloc_type;
+	typedef typename _Ctr::size_type 				size_type;
+	typedef typename _Ctr::comp_category 				comp_category;
+	typedef heap								            comp_type;
 	typedef pointer_wrapper<val_type> 			  iter;
 	typedef pointer_wrapper<const val_type> 	citer;
 	typedef reverse_iterator<val_type*> 		  riter;
 	typedef reverse_iterator<const val_type*> criter;
-	typedef std::strong_ordering 				      comp_category;
-	typedef vector								            comp_type;
   // clang-format on
   //
 public:
-  constexpr vector(tag_alloc, size_type count)
+  constexpr heap(tag_alloc, size_type count)
     : Alc()
     , Head(Alc.allocate((count + 1) * sizeof(val_type)))
     , Size()
     , Cap(count + 1){};
-  constexpr vector()
-    : vector(tag_alloc{}, 0) {}
-  //
-  constexpr vector(size_type count, const val_type& val)
-    : vector(tag_alloc{}, count) {
-    this->Insert(Head, creator(count, val));
-  }
-  //
-  constexpr vector(size_type count)
-    : vector(tag_alloc{}, count) {
-    this->Insert(Head, creator(count));
-  }
+  constexpr heap()
+    : heap(tag_alloc{}, 0) {}
   //
   template <class UCFIter, ts::enable<is_forward_iter<UCFIter>> = 0>
-  constexpr vector(UCFIter first, UCFIter last)
-    : vector(get_mnr_iter(first), batch::length(first, last)) {}
+  constexpr heap(UCFIter first, UCFIter last)
+    : heap(get_mnr_iter(first), batch::length(first, last)) {}
   //
   template <class UCFIter, ts::enable<is_forward_iter<UCFIter>> = 0>
-  constexpr vector(UCFIter first, size_type count)
-    : vector(tag_alloc{}, count) {
+  constexpr heap(UCFIter first, size_type count)
+    : heap(tag_alloc{}, count) {
     this->Insert(Head, creator(get_mnr_iter(first), count));
   }
   //
-  constexpr vector(const vector& ano)
-    : vector(ano.Head, ano.Size) {}
+  constexpr heap(const heap&) = default;
   //
-  constexpr vector(vector&& ano) noexcept
+  constexpr heap(heap&& ano) noexcept
     : Alc(as_rreference(ano.Alc))
     , Head(ano.Head)
     , Size(ano.Size)
@@ -68,28 +58,28 @@ public:
     ano.Head = nullptr;
   }
   //
-  constexpr vector(std::initializer_list<val_type> ilist)
-    : vector(tag_alloc{}, ilist.size()) {
+  constexpr heap(std::initializer_list<val_type> ilist)
+    : heap(tag_alloc{}, ilist.size()) {
     this->Insert(Head, creator(get_mnr_iter(ilist.begin()), ilist.size()));
   }
   //
-  constexpr ~vector() {
+  constexpr ~heap() {
     if(!this->invalid()) {
       this->erase(Head, Size);
       Alc.deallocate(Head);
     }
   }
   //
-  constexpr vector& operator=(vector&& ano) noexcept { return this->assign(as_rreference(ano)); }
+  constexpr heap& operator=(heap&& ano) noexcept { return this->assign(as_rreference(ano)); }
   //
-  constexpr vector& operator=(const vector& ano) { return this->assign(creator(ano.Head, ano.Size)); }
+  constexpr heap& operator=(const heap& ano) { return this->assign(creator(ano.Head, ano.Size)); }
   //
-  constexpr vector& operator=(std::initializer_list<val_type> ilist) {
+  constexpr heap& operator=(std::initializer_list<val_type> ilist) {
     return this->assign(creator(get_mnr_iter(ilist.begin()), ilist.size()));
   }
   //
   template <class UCreator, ts::enable<is_creater<UCreator>> = 0>
-  constexpr vector& assign(UCreator&& Ctor) {
+  constexpr heap& assign(UCreator&& Ctor) {
     if(this->invalid()) {
       Head = Alc.allocate((Ctor.Size + 1) * sizeof(val_type));
       Cap = Ctor.Size + 1;
@@ -98,12 +88,12 @@ public:
     this->Insert(Head, Ctor);
     return *this;
   }
-  constexpr vector& assign(size_type count, const val_type& val) { return this->assign(creator(count, val)); }
+  constexpr heap& assign(size_type count, const val_type& val) { return this->assign(creator(count, val)); }
   //
-  constexpr vector& assign(const vector& ano) { return this->assign(creator(ano.Head, ano.Size)); }
+  constexpr heap& assign(const heap& ano) { return this->assign(creator(ano.Head, ano.Size)); }
   //
-  constexpr vector& assign(vector&& ano) {
-    this->~vector();
+  constexpr heap& assign(heap&& ano) {
+    this->~heap();
     Alc = as_rreference(ano.Alc);
     Head = ano.Head;
     Cap = ano.Cap;
@@ -113,16 +103,16 @@ public:
   }
   //
   template <class UCFIter, ts::enable<is_forward_iter<UCFIter>> = 0>
-  constexpr vector& assign(UCFIter first, size_type count) {
+  constexpr heap& assign(UCFIter first, size_type count) {
     return this->assign(creator(get_mnr_iter(first), count));
   }
   //
   template <class UCFIter, ts::enable<is_forward_iter<UCFIter>> = 0>
-  constexpr vector& assign(UCFIter first, UCFIter last) {
+  constexpr heap& assign(UCFIter first, UCFIter last) {
     return this->assign(creator(get_mnr_iter(first), batch::length(first, last)));
   }
   //
-  constexpr vector& assign(std::initializer_list<val_type> ilist) {
+  constexpr heap& assign(std::initializer_list<val_type> ilist) {
     return this->assign(creator(get_mnr_iter(ilist.begin()), ilist.size()));
   }
   //
@@ -286,14 +276,12 @@ public:
       this->erase(Head + newSize, Size - newSize);
   }
   //
-  constexpr void swap(vector& ano) {
+  constexpr void swap(heap& ano) {
     XSL swap(Alc, ano.Alc);
     XSL swap(Head, ano.Head);
     XSL swap(Cap, ano.Cap);
     XSL swap(Size, ano.Size);
   }
-  //
-  constexpr void swap(citer l, citer r) { XSL swap(*l, *r); }
 protected:
   // default_allocator<_Val, _SizeType> Alc;
   alloc_type Alc;
@@ -338,8 +326,8 @@ protected:
 };
 //
 template <class Val, class Alloc>
-constexpr typename comp_traits<vector<Val, Alloc>>::comp_category operator<=>(
-  const vector<Val, Alloc>& l, const vector<Val, Alloc>& r) {
+constexpr typename comp_traits<heap<Val, Alloc>>::comp_category operator<=>(
+  const heap<Val, Alloc>& l, const heap<Val, Alloc>& r) {
   size_t lsize = l.size(), rsize = r.size();
   uint_8 ret = batch::compare(l.begin(), r.begin(), min(lsize, rsize));
   if(ret == 0 && lsize != rsize) ret = lsize < rsize ? -1 : 1;
@@ -347,25 +335,25 @@ constexpr typename comp_traits<vector<Val, Alloc>>::comp_category operator<=>(
 }
 //
 template <class Val, class Alloc1, class Alloc2>
-constexpr bool operator==(const vector<Val, Alloc1>& l, const vector<Val, Alloc2>& r) {
+constexpr bool operator==(const heap<Val, Alloc1>& l, const heap<Val, Alloc2>& r) {
   return l.size() == r.size() ? bool(l <=> r) : false;
 }
 //
 #ifdef XSL_TEST
 #include <xsl/bits/test.hpp>
-void xsl_test_vector() {
+void xsl_test_heap() {
   TEST_SPLIT_LINE(xsl::test::test_p);
   TEST_ACT_PRINT(xsl::test::test_p test_ps[6]{}; *test_ps[0].Ptr = 1; *test_ps[1].Ptr = 2; *test_ps[2].Ptr = 3;
                  *test_ps[3].Ptr = 4; *test_ps[4].Ptr = 5; *test_ps[5].Ptr = 6);
-  TEST_ACT_PRINT(vector<xsl::test::test_p> c00{});
+  TEST_ACT_PRINT(heap<xsl::test::test_p> c00{});
   TEST_RET_PRINT(c00, print, c00.size());
-  TEST_ACT_PRINT(vector<xsl::test::test_p> c01(test_ps, 1));
+  TEST_ACT_PRINT(heap<xsl::test::test_p> c01(test_ps, 1));
   TEST_RET_PRINT(c01, print, c01.size());
-  TEST_ACT_PRINT(vector<xsl::test::test_p> c02(test_ps, test_ps + 2));
+  TEST_ACT_PRINT(heap<xsl::test::test_p> c02(test_ps, test_ps + 2));
   TEST_RET_PRINT(c02, print, c02.size());
-  TEST_ACT_PRINT(vector<xsl::test::test_p> c03(3));
+  TEST_ACT_PRINT(heap<xsl::test::test_p> c03(3));
   TEST_RET_PRINT(c03, print, c03.size());
-  TEST_ACT_PRINT(vector<xsl::test::test_p> c04(3, test_ps[1]));
+  TEST_ACT_PRINT(heap<xsl::test::test_p> c04(3, test_ps[1]));
   TEST_RET_PRINT(c04, print, c04.size());
   TEST_ACT_PRINT(c00 = as_rreference(c01));
   TEST_RET_PRINT(c00, print, c00.size());
@@ -440,4 +428,4 @@ void xsl_test_vector() {
 #endif  // XSL_TEST
 
 XSL_END
-#endif  // !XSL_VECTOR
+#endif  // !XSL_HEAP

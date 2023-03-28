@@ -3,7 +3,7 @@
 #define XSL_BATCH
 
 #include <xsl/bits/allocator.hpp>
-#include <xsl/bits/iterator.hpp>
+#include <xsl/bits/iter.hpp>
 
 XSL_BEGIN
 namespace batch {

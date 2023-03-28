@@ -96,9 +96,10 @@ public:
   constexpr basic_string_view(const basic_string_view& ano, size_type index, size_type count = npos)
     : basic_string_view(ano.Head + index, count == npos ? ano.size : count) {}
   //
-  template <class Unchecked_Iter,
-    ts::enable<is_forward_iter<ts::rm_cvr<Unchecked_Iter>> && is_random_iter<ts::rm_cvr<Unchecked_Iter>>> = 0>
-  constexpr basic_string_view(Unchecked_Iter first, size_type count)
+  template <class Unchecked_Iter, class Size_T,
+    ts::enable<is_forward_iter<ts::rm_cvr<Unchecked_Iter>> && is_random_iter<ts::rm_cvr<Unchecked_Iter>>
+               && ts::has::opeartor_simple_assignment<size_t, Size_T>> = 0>
+  constexpr basic_string_view(Unchecked_Iter first, Size_T count)
     : Head(XSL addr(*first))
     , Size(count) {}
   //
@@ -273,15 +274,15 @@ class basic_string {
   //
 public:
   // clang-format off
-  typedef _Val val_type;
-  typedef _Alloc alloc_type;
-  typedef size_t size_type;
-  typedef pointer_wrapper<val_type> iter;
-  typedef pointer_wrapper<const val_type> citer;
-  typedef reverse_iterator<val_type *> riter;
-  typedef reverse_iterator<const val_type *> criter;
-  typedef std::strong_ordering comp_category;
-  typedef basic_string_view<val_type> comp_type;
+  typedef _Val                                val_type;
+  typedef _Alloc                              alloc_type;
+  typedef size_t                              size_type;
+  typedef pointer_wrapper<val_type>           iter;
+  typedef pointer_wrapper<const val_type>     citer;
+  typedef reverse_iterator<val_type *>        riter;
+  typedef reverse_iterator<const val_type *>  criter;
+  typedef std::strong_ordering                comp_category;
+  typedef const basic_string&                 comp_type;
   // clang-format on
   //
 public:
@@ -769,6 +770,11 @@ constexpr basic_string<Val, Alloc> operator+(Val val, basic_string<Val, Alloc>&&
 template <class Val, class Alloc = default_allocator<Val>>
 constexpr basic_string<Val, Alloc> operator+(const basic_string_view<Val>& l, Val val) {
   return as_rreference(basic_string<Val, Alloc>{l} += val);
+}
+//
+template <class Val, class Alloc = default_allocator<Val>>
+constexpr basic_string<Val, Alloc> operator+(Val val, const basic_string_view<Val>& r) {
+  return as_rreference(basic_string<Val, Alloc>{1, val} += r);
 }
 //
 template <class Val, class Alloc1, class Alloc2>
