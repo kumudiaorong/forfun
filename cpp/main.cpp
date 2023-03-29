@@ -1,12 +1,17 @@
 #include <boost/type_index.hpp>
+#include <iostream>
+#include <type_traits>
+#include <utility>
 
+#include "xsl/bits/test.hpp"
+#define XSL_TEST
 #define TEST_PROC_PRINT
-#include <xsl/bits/test.hpp>
-#include <xsl/map.hpp>
+// #include <xsl/bits/test.hpp>
+// #include <xsl/map.hpp>
 // #include <xsl/net.hpp>
-#include <xsl/ranges.hpp>
-#include <xsl/vector.hpp>
-#include <string>
+// #include <xsl/ranges.hpp>
+// #include <xsl/vector.hpp>
+#include <xsl/bits/str/test.hpp>
 using namespace xsl;
 template <class T>
 class tclass {
@@ -17,6 +22,9 @@ public:
     : n(forward<Args>(args)...) {}
 };
 int main() {
+  xsl_test_basic_string();
+  // xsl::test::os << 1;
+  // xsl::te;
   // xsl::net::http::client cli{};
   // // auto id = cli.get("http://www.baidu.com/", {});
   // xsl::net::MS2S header{};
@@ -57,6 +65,4 @@ int main() {
   // xsl::test::print(v1);
   // itv.merge(vec);
   // xsl::test::print(itv);
-
-  
 }

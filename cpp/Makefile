@@ -11,7 +11,7 @@ gr:g
 	./main
 
 Path=~/work/forfun/cpp
-FLAGS= -Wall -Wextra -std=c++20 -fdiagnostics-color=always#-Werror
+FLAGS= -std=c++20 -fdiagnostics-color=always#-Werror -Wextra -Wall 
 DYNA= -lz -lssl -lpthread -lcrypto -ldl
 
 g:

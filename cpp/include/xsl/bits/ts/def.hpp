@@ -16,28 +16,28 @@ namespace ts {
     // Template unit
     template <class T>
     struct _1 {
-      using Type = T;
-      using Self = _1;
+      typedef T type;
+      typedef _1 self;
     };
     // Template unit
     template <class T1, class T2>
     struct _2 {
-      using Type1 = T1;
-      using Type2 = T2;
-      using Self = _2;
+      typedef T1 type1;
+      typedef T2 type2;
+      typedef _2 self;
     };
     // Template unit
     template <class T1, class T2, class T3>
     struct _3 {
-      using Type1 = T1;
-      using Type2 = T2;
-      using Type3 = T3;
-      using Self = _3;
+      typedef T1 type1;
+      typedef T2 type2;
+      typedef T3 type3;
+      typedef _3 self;
     };
     // Template unit
     template <class... Ts>
     struct _n {
-      using Self = _n;
+      typedef _n self;
     };
   }  // namespace tp
   // Template unit
@@ -49,31 +49,22 @@ namespace ts {
     // basic template
     template <class T, T V>
     struct _1 : tp::_1<T> {
-      using Self = _1;
+      typedef _1 self;
     };
     template <class T, T V1, T V2>
     struct _2 : tp::_1<T> {
-      using Self = _2;
+      typedef _2 self;
     };
     template <class T, T... Vars>
     struct _n : tp::_1<T> {
-      using Self = _n;
+      typedef _n self;
     };
-    // template <class Left, class Right>
-    // constexpr auto addition;
-    // template <class Left, Left Vl, class Right, Left Vr>
-    // constexpr auto addition<_1<Left, Vl>, _1<Right, Vr>> =
   }  // namespace nt
   namespace var {
     template <auto V>
     struct _1 {
       static constexpr decltype(V) Val = V;
     };
-    // basic template
-    // template <class Left, class Right>
-    // constexpr auto addition;
-    // template <class Left, Left Vl, class Right, Left Vr>
-    // constexpr auto addition<_1<Left, Vl>, _1<Right, Vr>> =
   }  // namespace var
 }  // namespace ts
 XSL_END

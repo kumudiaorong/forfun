@@ -6,13 +6,31 @@
 XSL_BEGIN
 namespace ts {
   namespace is {
-    template <class>
-    inline constexpr bool norm_func = false;
+    template <class T>
+    inline constexpr bool array = false;
 
-    template <class Ret, class... Args>
-    inline constexpr bool norm_func<Ret(Args...)> = true;
+    template <class T>
+    inline constexpr bool array<T[]> = true;
 
-    template <class>
+    template <class T, size_t Size>
+    inline constexpr bool array<T[Size]> = true;
+
+    template <class T>
+    inline constexpr bool lref = false;
+
+    template <class T>
+    inline constexpr bool lref<T&> = true;
+
+    template <class T>
+    inline constexpr bool rref = false;
+
+    template <class T>
+    inline constexpr bool rref<T&&> = true;
+
+    template <class T>
+    inline constexpr bool ref = lref<T> || rref<T>;
+
+    template <class T>
     inline constexpr bool norm_func_ptr = false;
 
     template <class Ret, class... Args>
@@ -23,21 +41,6 @@ namespace ts {
 
     template <class Ret, class Class>
     inline constexpr bool member_func_ptr<Ret(Class::*)> = true;
-
-    template <class T>
-    inline constexpr bool pointer = false;
-
-    template <class T>
-    inline constexpr bool pointer<T *> = true;
-
-    template <class T>
-    inline constexpr bool pointer<T *const> = true;
-
-    template <class T>
-    inline constexpr bool pointer<T *volatile> = true;
-
-    template <class T>
-    inline constexpr bool pointer<T *const volatile> = true;
 
     template <class This, class Another>
     inline constexpr bool same = false;
@@ -55,19 +58,28 @@ namespace ts {
     inline constexpr bool char32 = same<T, char32_t>;
 
     template <class T>
-    inline constexpr bool Nullptr = same<T, decltype(nullptr)>;
+    inline constexpr bool nullptr_ = same<T, decltype(nullptr)>;
 
     template <class T>
-    inline constexpr bool Void = same<T, void>;
+    inline constexpr bool ptr = false;
+
+    template <class T>
+    inline constexpr bool ptr<T *> = true;
+
+    template <class T>
+    inline constexpr bool ptr<T *const> = true;
+
+    template <class T>
+    inline constexpr bool ptr<T *volatile> = true;
+
+    template <class T>
+    inline constexpr bool ptr<T *const volatile> = true;
+
+    template <class T>
+    inline constexpr bool void_ = same<T, void>;
 
     template <class T>
     inline constexpr bool wchar = same<T, wchar_t>;
-
-    template <class This, class Other>
-    inline constexpr bool same_template = false;
-
-    template <template <class...> class Rep, class... Ts1, class... Ts2>
-    inline constexpr bool same_template<Rep<Ts1...>, Rep<Ts2...>> = true;
 
     template <class T, class Rep>
     inline constexpr bool existing = false;
@@ -76,38 +88,6 @@ namespace ts {
     inline constexpr bool existing<T, Rep<This, Rest...>> = same<T, This> || existing<T, Rep<Rest...>>;
     // Template unit
     //
-    template <class T, class Rep>
-    inline constexpr bool existing_template = false;
-    //
-    template <class T, template <class...> class Rep, class This, class... Rest>
-    inline constexpr bool existing_template<T, Rep<This, Rest...>> =
-      same_template<T, This> || existing_template<T, Rep<Rest...>>;
-    // Template unit
-    //
-    /*cout << is_character<char> << ' ' << is_character<signed char> << ' ' << is_character<unsigned char> << ' '
-    << is_character<short> << ' ' << is_character<unsigned short> << ' ' << is_character<int> << ' ' <<
-    is_character<unsigned int> << ' ' << is_character<long> << ' ' << is_character<unsigned long> << ' ' <<
-    is_character<long long> << ' ' << is_character<unsigned long long> << ' '
-    << is_character<float> << ' ' << is_character<double> << ' ' << is_character<long double> << '\n';
-    cout << is_integer<char> << ' ' << is_integer<signed char> << ' ' << is_integer<unsigned char> << ' '
-            << is_integer<short> << ' ' << is_integer<unsigned short> << ' ' << is_integer<int> << ' ' <<
-    is_integer<unsigned int> << ' ' << is_integer<long> << ' ' << is_integer<unsigned long> << ' ' << is_integer<long
-    long>
-    << ' ' << is_integer<unsigned long long> << ' '
-            << is_integer<float> << ' ' << is_integer<double> << ' ' << is_integer<long double> << '\n';
-    cout << is_floating_point<char> << ' ' << is_floating_point<signed char> << ' ' << is_floating_point<unsigned char>
-    <<
-    '
-    '
-            << is_floating_point<short> << ' ' << is_floating_point<unsigned short> << ' ' << is_floating_point<int> <<
-    '
-    '
-    << is_floating_point<unsigned int> << ' ' << is_floating_point<long> << ' ' << is_floating_point<unsigned long> << '
-    '
-    << is_floating_point<long long> << ' ' << is_floating_point<unsigned long long> << ' '
-            << is_floating_point<float> << ' ' << is_floating_point<double> << ' ' << is_floating_point<long double> <<
-    '\n';
-    */
     template <class T>
     inline constexpr bool character = ts::is::existing<T, tp::_n<char, signed char, unsigned char, char8_t>>;
 
@@ -123,7 +103,8 @@ namespace ts {
     inline constexpr bool arithmetic = integer<T> || floating_point<T>;
 
     template <class T>
-    inline constexpr bool basic_type = arithmetic<T> || pointer<T> || member_func_ptr<T> || Nullptr<T> || Void<T>;
+    inline constexpr bool basic_type =
+      arithmetic<T> || ptr<T> || norm_func_ptr<T> || member_func_ptr<T> || nullptr_<T> || void_<T>;
   }  // namespace is
 }  // namespace ts
 XSL_END

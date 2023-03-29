@@ -106,28 +106,28 @@ namespace ts {
     // Template unit
     template <class T>
     struct _1 {
-      using Type = T;
-      using Self = _1;
+      using type = T;
+      using self = _1;
     };
     // Template unit
     template <class T1, class T2>
     struct _2 {
-      using Type1 = T1;
-      using Type2 = T2;
-      using Self = _2;
+      using type1 = T1;
+      using type2 = T2;
+      using self = _2;
     };
     // Template unit
     template <class T1, class T2, class T3>
     struct _3 {
-      using Type1 = T1;
-      using Type2 = T2;
-      using Type3 = T3;
-      using Self = _3;
+      using type1 = T1;
+      using type2 = T2;
+      using type3 = T3;
+      using self = _3;
     };
     // Template unit
     template <class... Ts>
     struct _n {
-      using Self = _n;
+      using self = _n;
     };
     // Template unit
     namespace impl {
@@ -135,17 +135,17 @@ namespace ts {
       struct extract : _1<T> {};
       //
       template <class T>
-      struct extract<T, 0, _0<class T::Type>> : _1<typename T::Type> {};
+      struct extract<T, 0, _0<class T::type>> : _1<typename T::type> {};
       //
       template <class T>
-      struct extract<T, 1, _0<class T::Type1>> : _1<typename T::Type1> {};
+      struct extract<T, 1, _0<class T::type1>> : _1<typename T::type1> {};
       //
       template <class T>
-      struct extract<T, 2, _0<class T::Type2>> : _1<typename T::Type2> {};
+      struct extract<T, 2, _0<class T::type2>> : _1<typename T::type2> {};
       //
     }  // namespace impl
     template <class T, uint_8 Index = 0>
-    using extract = typename impl::extract<T, Index>::Type;
+    using extract = typename impl::extract<T, Index>::type;
     // Template unit
     namespace impl {
       template <class Rep>
@@ -156,7 +156,7 @@ namespace ts {
     }  // namespace impl
     //
     template <class Rep>
-    using first = typename impl::first<Rep>::Type;
+    using first = typename impl::first<Rep>::type;
     // Template unit
     //
   }  // namespace tp
@@ -164,13 +164,13 @@ namespace ts {
     // template <bool Con>
     // struct conditional {
     //   template <class T, class>
-    //   using Type = T;
+    //   using type = T;
     // };
     // //
     // template <>
     // struct conditional<false> {
     //   template <class, class T>
-    //   using Type = T;
+    //   using type = T;
     // };
     //
     template <bool Con, class True, class False>
@@ -181,7 +181,7 @@ namespace ts {
 
   }  // namespace impl
   template <bool Con, class True, class False>
-  using conditional = typename impl::conditional<Con, True, False>::Type;
+  using conditional = typename impl::conditional<Con, True, False>::type;
 
   template <bool Con, template <class> class Pre, class T>
   using conditional_apply = conditional<Con, Pre<T>, T>;
@@ -440,34 +440,34 @@ namespace ts {
     // Template unit
     //
     template <class Rep, uint_8 Id>
-    using find_by_id_with_rep = first<typename move<_n<>, Rep, Id>::Type2>;
+    using find_by_id_with_rep = first<typename move<_n<>, Rep, Id>::type2>;
     // Dependent Templates:move
     //
     template <uint_8 Id, class... Ts>
-    using find_by_id = first<typename move<_n<>, _n<Ts...>, Id>::Type2>;
+    using find_by_id = first<typename move<_n<>, _n<Ts...>, Id>::type2>;
     // Dependent Templates:move
     //
     template <class Rep>
-    using remove_first = typename move<_n<>, Rep, 1>::Type2;
+    using remove_first = typename move<_n<>, Rep, 1>::type2;
     // Dependent Templates:move
     //
     template <class Rep, uint_8 Count>
-    using remove_front = typename move<_n<>, Rep, Count>::Type2;
+    using remove_front = typename move<_n<>, Rep, Count>::type2;
     // Dependent Templates:move
     //
     template <class Rep, uint_8 Count>
     using remove_by_id =
-      typename merge<class move<_n<>, Rep, Count>::Type1, class move<_n<>, Rep, Count + 1>::Type2>::Type1;
+      typename merge<class move<_n<>, Rep, Count>::type1, class move<_n<>, Rep, Count + 1>::type2>::type1;
     // Dependent Templates:merge,move
     //
     template <class EdRep, class Er>
-    using replace_first = typename merge<_n<Er>, typename move<_n<>, EdRep, 1>::Type2>::Type2;
+    using replace_first = typename merge<_n<Er>, typename move<_n<>, EdRep, 1>::type2>::type2;
     // Dependent Templates:merge,move
     //
     template <class LeftRep, class RightRep, uint_8 Count, class LP = move<_n<>, LeftRep, Count>,
       class RP = move<_n<>, RightRep, Count>>
     using swap_front =
-      _2<class merge<class RP::Type1, class LP::Type2>::Type2, class merge<class LP::Type1, class RP::Type2>::Type2>;
+      _2<class merge<class RP::type1, class LP::type2>::type2, class merge<class LP::type1, class RP::type2>::type2>;
     // Dependent Templates:merge,move
     //
     template <class Rep>
@@ -478,7 +478,7 @@ namespace ts {
     // Template unit
     //
     template <class Rep, uint_8 Count>
-    using remove_back = typename move<_n<>, Rep, size<Rep> - Count>::Type1;
+    using remove_back = typename move<_n<>, Rep, size<Rep> - Count>::type1;
     // Dependent Templates:move,size
     //
     namespace impl {
@@ -600,7 +600,7 @@ namespace ts {
   }  // namespace impl
 
   template <bool Con>
-  using enable = typename impl::enable<Con>::Type;
+  using enable = typename impl::enable<Con>::type;
   namespace fn {
     namespace impl {
       template <class Class, class Func>
@@ -610,7 +610,7 @@ namespace ts {
       struct func_add_class<Class, Ret(Args...)> : tp::_1<Ret (Class::*)(Args...)> {};
     }  // namespace impl
     template <class Class, class Ret, class... Args>
-    using func_add_class = typename impl::func_add_class<Class, Ret(Args...)>::Self::Type;
+    using func_add_class = typename impl::func_add_class<Class, Ret(Args...)>::Self::type;
 
     namespace impl {
       template <class>
@@ -620,7 +620,7 @@ namespace ts {
       struct func_add_ptr<Ret(Args...)> : tp::_1<Ret (*)(Args...)> {};
     }  // namespace impl
     template <class Func>
-    using func_add_ptr = typename impl::func_add_ptr<Func>::Self::Type;
+    using func_add_ptr = typename impl::func_add_ptr<Func>::Self::type;
 
     template <class>
     struct func_info;
@@ -650,7 +650,7 @@ namespace ts {
     }  // namespace impl
 
     template <class Func>
-    using func_rm_class = typename impl::func_rm_class<Func>::Self::Type;
+    using func_rm_class = typename impl::func_rm_class<Func>::Self::type;
     namespace impl {
       template <class>
       struct func_rm_ptr;
@@ -660,34 +660,34 @@ namespace ts {
     }  // namespace impl
 
     template <class Ret, class... Args>
-    using func_rm_ptr = typename impl::func_rm_ptr<Ret (*)(Args...)>::Self::Type;
+    using func_rm_ptr = typename impl::func_rm_ptr<Ret (*)(Args...)>::Self::type;
 
     template <class, class>
     struct func_swap;
 
     template <class Ret1, class Class1, class... Args1, class Ret2, class Class2, class... Args2>
     struct func_swap<Ret1 (Class1::*)(Args1...), Ret2 (Class2::*)(Args2...)> {
-      using Type1 = tp::_2<Ret2 (Class1::*)(Args1...), Ret1 (Class2::*)(Args2...)>;
-      using Type2 = tp::_2<Ret1 (Class2::*)(Args1...), Ret2 (Class1::*)(Args2...)>;
-      using Type3 = tp::_2<Ret1 (Class1::*)(Args2...), Ret2 (Class2::*)(Args1...)>;
+      using type1 = tp::_2<Ret2 (Class1::*)(Args1...), Ret1 (Class2::*)(Args2...)>;
+      using type2 = tp::_2<Ret1 (Class2::*)(Args1...), Ret2 (Class1::*)(Args2...)>;
+      using type3 = tp::_2<Ret1 (Class1::*)(Args2...), Ret2 (Class2::*)(Args1...)>;
     };
 
     template <class Ret1, class Class1, class... Args1, class Ret2, class... Args2>
     struct func_swap<Ret1 (Class1::*)(Args1...), Ret2 (*)(Args2...)> {
-      using Type1 = tp::_2<Ret2 (Class1::*)(Args1...), Ret1 (*)(Args2...)>;
-      using Type3 = tp::_2<Ret1 (Class1::*)(Args2...), Ret2 (*)(Args1...)>;
+      using type1 = tp::_2<Ret2 (Class1::*)(Args1...), Ret1 (*)(Args2...)>;
+      using type3 = tp::_2<Ret1 (Class1::*)(Args2...), Ret2 (*)(Args1...)>;
     };
 
     template <class Ret1, class... Args1, class Ret2, class Class2, class... Args2>
     struct func_swap<Ret1 (*)(Args1...), Ret2 (Class2::*)(Args2...)> {
-      using Type1 = tp::_2<Ret2 (*)(Args1...), Ret1 (Class2::*)(Args2...)>;
-      using Type3 = tp::_2<Ret1 (*)(Args2...), Ret2 (Class2::*)(Args1...)>;
+      using type1 = tp::_2<Ret2 (*)(Args1...), Ret1 (Class2::*)(Args2...)>;
+      using type3 = tp::_2<Ret1 (*)(Args2...), Ret2 (Class2::*)(Args1...)>;
     };
 
     template <class Ret1, class... Args1, class Ret2, class... Args2>
     struct func_swap<Ret1 (*)(Args1...), Ret2 (*)(Args2...)> {
-      using Type1 = tp::_2<Ret2 (*)(Args1...), Ret1 (*)(Args2...)>;
-      using Type3 = tp::_2<Ret1 (*)(Args2...), Ret2 (*)(Args1...)>;
+      using type1 = tp::_2<Ret2 (*)(Args1...), Ret1 (*)(Args2...)>;
+      using type3 = tp::_2<Ret1 (*)(Args2...), Ret2 (*)(Args1...)>;
     };
     namespace impl {
       template <class, class>
@@ -704,7 +704,7 @@ namespace ts {
     }  // namespace impl
 
     template <class Func, class Args>
-    using func_swap_args = typename impl::func_swap_args<Func, Args>::Self::Type;
+    using func_swap_args = typename impl::func_swap_args<Func, Args>::Self::type;
   }  // namespace fn
   namespace is {
     template <class T>
@@ -731,10 +731,10 @@ namespace ts {
   // struct const_impl <const T> :tp::_2<T, const T> { };
   //
   // template<class T>
-  // using rm_c = const_impl<T>::Type1;
+  // using rm_c = const_impl<T>::type1;
   //
   // template<class T>
-  // using as_c = const_impl<T>::Type2;
+  // using as_c = const_impl<T>::type2;
   namespace impl {
     template <class T>
     struct const_traits : tp::_1<T> {};
@@ -743,10 +743,10 @@ namespace ts {
     struct const_traits<const T> : tp::_1<T> {};
   }  // namespace impl
   template <class T>
-  using rm_c = typename impl::const_traits<T>::Type;
+  using rm_c = typename impl::const_traits<T>::type;
 
   template <class T>
-  using as_c = const typename impl::const_traits<T>::Type;
+  using as_c = const typename impl::const_traits<T>::type;
 
   template <class T>
   inline constexpr bool Const = is::same<T, as_c<T>>;
@@ -761,19 +761,19 @@ namespace ts {
   struct reference_impl<T&&> : tp::_1<T> {};
 
   template <class T>
-  using rm_ref = typename reference_impl<T>::Type;
+  using rm_ref = typename reference_impl<T>::type;
 
   template <class T>
-  using as_lref = typename reference_impl<T>::Type&;
+  using as_lref = typename reference_impl<T>::type&;
 
   template <class T>
-  using as_rref = typename reference_impl<T>::Type&&;
+  using as_rref = typename reference_impl<T>::type&&;
   namespace is {
     template <class T>
-    inline constexpr bool lref = ts::is::same<T, typename reference_impl<T>::Type&>;
+    inline constexpr bool lref = ts::is::same<T, typename reference_impl<T>::type&>;
 
     template <class T>
-    inline constexpr bool rref = ts::is::same<T, typename reference_impl<T>::Type&&>;
+    inline constexpr bool rref = ts::is::same<T, typename reference_impl<T>::type&&>;
 
     template <class T>
     inline constexpr bool ref = lref<T> || rref<T>;
@@ -813,10 +813,10 @@ namespace ts {
   struct pointer_impl<T *> : tp::_2<T, T *> {};
 
   template <class T>
-  using rm_p = typename pointer_impl<T>::Type1;
+  using rm_p = typename pointer_impl<T>::type1;
 
   template <class T, class V = void>
-  using as_p = typename pointer_impl<T>::Type2;
+  using as_p = typename pointer_impl<T>::type2;
 
   template <class T>
   struct array_impl : tp::_1<T> {};
@@ -828,7 +828,7 @@ namespace ts {
   struct array_impl<T[Size]> : tp::_1<T> {};
 
   template <class T>
-  using rm_e = typename array_impl<T>::Type;
+  using rm_e = typename array_impl<T>::type;
 
   template <class T>
   inline constexpr bool array = !ts::is::same<T, rm_e<T>>;
@@ -840,7 +840,7 @@ namespace ts {
   struct volatile_impl<volatile T> : tp::_1<T> {};
 
   template <class T>
-  using rm_v = typename volatile_impl<T>::Type;
+  using rm_v = typename volatile_impl<T>::type;
 
   template <class T>
   using rm_cv = rm_v<rm_c<T>>;
@@ -854,13 +854,13 @@ namespace ts {
     template <class T>
     struct decay {
       using No_Ref = rm_ref<T>;
-      using Type = typename ts::conditional<is::func<No_Ref>, as_p<No_Ref>,
+      using type = typename ts::conditional<is::func<No_Ref>, as_p<No_Ref>,
         typename ts::conditional<array<No_Ref>, as_p<rm_e<No_Ref>>, rm_cv<No_Ref>>>;
     };
   }  // namespace impl
 
   template <class T>
-  using decay = typename impl::decay<T>::Type;
+  using decay = typename impl::decay<T>::type;
 
   template <class This, class Other>
   using enable_construct = enable<!ts::is::same<This, rm_cvr<Other>>>;
@@ -885,7 +885,7 @@ namespace ts {
     using move = move_with_rep<tp::_2<LeftRep, RightRep>, Count>;
     //
     template <class Rep, uint_8 Count>
-    using remove_front = typename move_with_rep<tp::_2<_n<typename Rep::Type>, Rep>, Count>::Type2;
+    using remove_front = typename move_with_rep<tp::_2<_n<typename Rep::type>, Rep>, Count>::type2;
     //
     template <class Rep>
     using remove_first = remove_front<Rep, 1>;
@@ -925,13 +925,13 @@ namespace ts {
   namespace tp {
     template <class Rep, class NewRep, uint_8 Count>
     struct as_rref_n_impl
-      : as_rref_n_impl<remove_first<Rep>, class merge<_n<as_rref<first<Rep>>>, NewRep>::Type2, Count - 1> {};
+      : as_rref_n_impl<remove_first<Rep>, class merge<_n<as_rref<first<Rep>>>, NewRep>::type2, Count - 1> {};
 
     template <class Rep, class NewRep>
     struct as_rref_n_impl<Rep, NewRep, 0> : _1<NewRep> {};
 
     template <class Rep, uint_8 Count>
-    using as_rref_n = as_rref_n_impl<Rep, class swap<Rep, _n<>>::Type1, Count>;
+    using as_rref_n = as_rref_n_impl<Rep, class swap<Rep, _n<>>::type1, Count>;
   }  // namespace tp
 }  // namespace ts
 XSL_END
