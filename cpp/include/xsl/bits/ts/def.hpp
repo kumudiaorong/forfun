@@ -2,8 +2,7 @@
 #ifndef XSL_TYPE_SUPPORT_DEF
 #define XSL_TYPE_SUPPORT_DEF
 #include <xsl/bits/def.hpp>
-XSL_BEGIN
-namespace ts {
+namespace xsl::ts {
   namespace tp {
     struct true_type {
       constexpr static bool Val = true;
@@ -59,13 +58,36 @@ namespace ts {
     struct _n : tp::_1<T> {
       typedef _n self;
     };
+    template <class T, T V1, T V2>
+    constexpr T subtraction = V1 - V2;
   }  // namespace nt
   namespace var {
     template <auto V>
     struct _1 {
-      static constexpr decltype(V) Val = V;
+      static constexpr decltype(V) value = V;
     };
   }  // namespace var
-}  // namespace ts
-XSL_END
+  namespace impl {
+    // template <bool Con>
+    // struct conditional {
+    //   template <class T, class>
+    //   using type = T;
+    // };
+    // //
+    // template <>
+    // struct conditional<false> {
+    //   template <class, class T>
+    //   using type = T;
+    // };
+    //
+    template <bool Con, class True, class False>
+    struct conditional : tp::_1<True> {};
+    //
+    template <class True, class False>
+    struct conditional<false, True, False> : tp::_1<False> {};
+
+  }  // namespace impl
+  template <bool Con, class True, class False>
+  using conditional = typename impl::conditional<Con, True, False>::type;
+}  // namespace xsl::ts
 #endif  // TOT_H

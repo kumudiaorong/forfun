@@ -1,0 +1,253 @@
+test_p tmp{}; int i = 0
+test_p()
+
+auto tf00 = xsl::fn::bind(&f00)
+
+f00()
+void f00()
+
+tf00()
+void f00()
+
+auto tf11 = xsl::fn::bind_front<1>(&f01)
+
+auto tf12 = xsl::fn::bind(&f01, tmp)
+test_p(const test_p& Ano)
+
+auto tf13 = xsl::fn::bind(&f01, xsl::as_const(tmp))
+test_p(const test_p& Ano)
+
+auto tf14 = xsl::fn::bind(&f01, xsl::wrap_ref(tmp))
+
+auto tf15 = xsl::fn::bind(&f01, test_p{})
+test_p()
+test_p(test_p && Ano)
+~test_p()
+
+f01(tmp)
+test_p(const test_p& Ano)
+void f01(test_p t)
+~test_p()
+
+tf11(tmp)
+test_p(const test_p& Ano)
+void f01(test_p t)
+~test_p()
+
+tf12()
+test_p(const test_p& Ano)
+void f01(test_p t)
+~test_p()
+
+f01(xsl::as_const(tmp))
+test_p(const test_p& Ano)
+void f01(test_p t)
+~test_p()
+
+tf11(xsl::as_const(tmp))
+test_p(const test_p& Ano)
+void f01(test_p t)
+~test_p()
+
+tf13()
+test_p(const test_p& Ano)
+void f01(test_p t)
+~test_p()
+
+f01(xsl::as_lreference(tmp))
+test_p(const test_p& Ano)
+void f01(test_p t)
+~test_p()
+
+tf11(xsl::as_lreference(tmp))
+test_p(const test_p& Ano)
+void f01(test_p t)
+~test_p()
+
+tf14()
+test_p(const test_p& Ano)
+void f01(test_p t)
+~test_p()
+
+f01(test_p{})
+test_p()
+void f01(test_p t)
+~test_p()
+
+tf11(test_p{})
+test_p()
+test_p(test_p && Ano)
+void f01(test_p t)
+~test_p()
+~test_p()
+
+tf15()
+test_p(const test_p& Ano)
+void f01(test_p t)
+~test_p()
+
+auto tf21 = xsl::fn::bind_front<1>(&f02)
+
+auto tf22 = xsl::fn::bind(&f02, xsl::wrap_ref(tmp))
+
+auto tf23 = xsl::fn::bind(&f02, xsl::wrap_ref(tmp))
+
+f02(tmp)
+void f02(test_p & t)
+
+tf21(tmp)
+void f02(test_p & t)
+
+tf22()
+void f02(test_p & t)
+
+f02(xsl::as_lreference(tmp))
+void f02(test_p & t)
+
+tf21(xsl::as_lreference(tmp))
+void f02(test_p & t)
+
+tf23()
+void f02(test_p & t)
+
+auto tf31 = xsl::fn::bind_front<1>(&f03)
+
+auto tf32 = xsl::fn::bind(&f03, tmp)
+test_p(const test_p& Ano)
+
+auto tf33 = xsl::fn::bind(&f03, xsl::as_const(tmp))
+test_p(const test_p& Ano)
+
+auto tf34 = xsl::fn::bind(&f03, xsl::wrap_ref(tmp))
+
+auto tf35 = xsl::fn::bind(&f03, test_p{})
+test_p()
+test_p(test_p && Ano)
+~test_p()
+
+f03(tmp)
+void f03(const test_p& t)
+
+tf31(tmp)
+void f03(const test_p& t)
+
+tf32()
+void f03(const test_p& t)
+
+f03(xsl::as_const(tmp))
+void f03(const test_p& t)
+
+tf31(xsl::as_const(tmp))
+void f03(const test_p& t)
+
+tf33()
+void f03(const test_p& t)
+
+f03(xsl::as_lreference(tmp))
+void f03(const test_p& t)
+
+tf31(xsl::as_lreference(tmp))
+void f03(const test_p& t)
+
+tf34()
+void f03(const test_p& t)
+
+f03(test_p{})
+test_p()
+void f03(const test_p& t)
+~test_p()
+
+tf31(test_p{})
+test_p()
+void f03(const test_p& t)
+~test_p()
+
+tf35()
+void f03(const test_p& t)
+
+auto tf41 = xsl::fn::bind_front<2>(&f04)
+
+auto tf42 = xsl::fn::bind_front<1>(&f04, i)
+
+auto tf43 = xsl::fn::bind(&f04, xsl::fn::placeholder{}, tmp)
+test_p(const test_p& Ano)
+
+auto tf44 = xsl::fn::bind(&f04, i, tmp)
+test_p(const test_p& Ano)
+
+f04(i, tmp)
+test_p(const test_p& Ano)
+void f04(int i, test_p t)
+~test_p()
+
+tf41(i, tmp)
+test_p(const test_p& Ano)
+void f04(int i, test_p t)
+~test_p()
+
+tf42(tmp)
+test_p(const test_p& Ano)
+void f04(int i, test_p t)
+~test_p()
+
+tf43(i)
+test_p(const test_p& Ano)
+void f04(int i, test_p t)
+~test_p()
+
+tf44()
+test_p(const test_p& Ano)
+void f04(int i, test_p t)
+~test_p()
+
+auto tf51 = xsl::fn::bind_front<1>(&test_p::test_func00, &tmp)
+
+auto tf52 = xsl::fn::bind(&test_p::test_func00, &tmp, tmp)
+test_p(const test_p& Ano)
+
+auto tf61 = xsl::fn::bind_front<1>(&test_p::test_func01, &tmp)
+
+auto tf62 = xsl::fn::bind(&test_p::test_func01, &tmp, tmp)
+test_p(const test_p& Ano)
+
+tmp.test_func00(tmp)
+test_p(const test_p& Ano)
+void _test_p(test_p t)
+~test_p()
+
+tf51(tmp)
+test_p(const test_p& Ano)
+void _test_p(test_p t)
+~test_p()
+
+tf52()
+test_p(const test_p& Ano)
+void _test_p(test_p t)
+~test_p()
+
+tmp.test_func01(tmp)
+test_p(const test_p& Ano)
+void _test_p(test_p t) const
+~test_p()
+
+tf61(tmp)
+test_p(const test_p& Ano)
+void _test_p(test_p t) const
+~test_p()
+
+tf62()
+test_p(const test_p& Ano)
+void _test_p(test_p t) const
+~test_p()
+
+~test_p()
+~test_p()
+~test_p()
+~test_p()
+~test_p()
+~test_p()
+~test_p()
+~test_p()
+~test_p()
+~test_p()
+~test_p()

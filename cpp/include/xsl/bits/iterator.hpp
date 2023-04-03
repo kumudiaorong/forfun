@@ -6,12 +6,11 @@
 #include <xsl/bits/def.hpp>
 #include <xsl/bits/ts/as.hpp>
 #include <xsl/bits/ts/is.hpp>
-#include <xsl/bits/ts/remove.hpp>
+#include <xsl/bits/ts/rm.hpp>
 #include <xsl/bits/ts/unvs.hpp>
 #include <xsl/bits/utility.hpp>
 
-XSL_BEGIN
-namespace itor {
+namespace xsl::itor {
   //
 
   struct tag_forward {};
@@ -24,24 +23,35 @@ namespace itor {
   class ptr_wrapper {
   public:
     // clang-format off
-	typedef tag_random         category;
-	typedef ptr_wrapper 		self_type;
+	typedef tag_random          iter_category;
+	typedef ptr_wrapper 		    self_type;
 	typedef T		 								val_type;
-	typedef std::weak_ordering 	comp_category;
-	typedef T* 	              unwrap_type;
+	typedef std::weak_ordering  comp_category;
+	typedef T* 	                unwrap_type;
     // clang-format on
     T *Ptr;
     constexpr ptr_wrapper()
-      : Ptr(nullptr) {}
+      : Ptr(nullptr) {
+    }
     constexpr ptr_wrapper(T *ptr)
-      : Ptr(ptr) {}
+      : Ptr(ptr) {
+    }
     template <class Other, ts::enable<ts::has::constructible<T *, Other *>> = 0>
     constexpr ptr_wrapper(ptr_wrapper<Other> ano)
-      : Ptr(ano.Ptr) {}
-    constexpr T *to_unwrap() { return Ptr; }
-    constexpr operator T *() { return Ptr; }
-    constexpr T& operator*() const { return *Ptr; }
-    constexpr T *operator->() const { return Ptr; }
+      : Ptr(ano.Ptr) {
+    }
+    constexpr T *to_unwrap() {
+      return Ptr;
+    }
+    constexpr operator T *() {
+      return Ptr;
+    }
+    constexpr T& operator*() const {
+      return *Ptr;
+    }
+    constexpr T *operator->() const {
+      return Ptr;
+    }
     constexpr ptr_wrapper& operator++() {
       ++Ptr;
       return *this;
@@ -60,9 +70,15 @@ namespace itor {
       --Ptr;
       return {Tmp};
     }
-    constexpr comp_category compare(const ptr_wrapper& ano) const { return Ptr <=> ano.Ptr; }
-    constexpr bool operator==(const ptr_wrapper& ano) const { return Ptr == ano.Ptr; }
-    constexpr bool operator!=(const ptr_wrapper& ano) const { return Ptr != ano.Ptr; }
+    constexpr comp_category compare(const ptr_wrapper& ano) const {
+      return Ptr <=> ano.Ptr;
+    }
+    constexpr bool operator==(const ptr_wrapper& ano) const {
+      return Ptr == ano.Ptr;
+    }
+    constexpr bool operator!=(const ptr_wrapper& ano) const {
+      return Ptr != ano.Ptr;
+    }
   };
   template <class T>
   constexpr typename comp::traits<ptr_wrapper<T>>::comp_category operator<=>(
@@ -76,22 +92,18 @@ namespace itor {
   // gcc would not think using statement is a type,if using typedef,it would
   // become int
   //
-  template <class T>
-  struct get_val_type : ts::tp::type_traits<T, decltype([]<class U>(U) -> typename U::val_type {}), T>::Self {};
-  //
-  //
   template <class CheckedIter>
   struct traits {
     // clang-format off
-	typedef get_category<CheckedIter>	category;
-	typedef CheckedIter 							                    self_type;
-	typedef typename get_val_type<CheckedIter>::type 		  val_type;
+	typedef get_category<CheckedIter>	        iter_category;
+	typedef CheckedIter 							        self_type;
+	typedef ts::tp::get_val_type<CheckedIter> val_type;
     // clang-format on
   };
   template <class Val>
   struct traits<Val *> {
     // clang-format off
-	typedef tag_random	    category;
+	typedef tag_random	    iter_category;
 	typedef Val*            self_type;
 	typedef ts::rm::cvr<Val> val_type;
     // clang-format on
@@ -103,27 +115,37 @@ namespace itor {
   public:
     // clang-format off
 	typedef std::weak_ordering 						      comp_category;
-	typedef reverse 			              self_type;
-	typedef traits<_Iter> 									traits_type;
-	typedef typename traits_type::category category;
+	typedef reverse 			                      self_type;
+	typedef traits<_Iter> 									    traits_type;
+	typedef typename traits_type::iter_category iter_category;
 	typedef typename traits_type::val_type 			val_type;
-	typedef self_type 										unwrap_type;
+	typedef self_type 										      unwrap_type;
     // clang-format on
     constexpr reverse() = default;
     constexpr reverse(_Iter iter)
-      : Iter(as_rreference(iter)) {}
+      : Iter(as_rreference(iter)) {
+    }
     template <class Other, ts::enable<ts::has::constructible<_Iter, Other>> = 0>
     constexpr reverse(const reverse<Other>& ano)
-      : Iter(as_rreference(ano.unwrap())) {}
+      : Iter(as_rreference(ano.unwrap())) {
+    }
     template <class Other, ts::enable<ts::has::constructible<_Iter, Other>> = 0>
     constexpr reverse& operator=(const reverse<Other>& Ano) {
       Iter = Ano.Iter;
       return *this;
     }
-    constexpr val_type& operator*() const { return *Iter; }
-    constexpr decltype(auto) operator->() const { return XSL addr(*Iter); }
-    constexpr bool operator==(const reverse& ano) const { return Iter == ano.Iter; }
-    constexpr bool operator!=(const reverse& ano) const { return !(Iter == ano.Iter); }
+    constexpr val_type& operator*() const {
+      return *Iter;
+    }
+    constexpr decltype(auto) operator->() const {
+      return addr(*Iter);
+    }
+    constexpr bool operator==(const reverse& ano) const {
+      return Iter == ano.Iter;
+    }
+    constexpr bool operator!=(const reverse& ano) const {
+      return !(Iter == ano.Iter);
+    }
     constexpr reverse& operator++() {
       --Iter;
       return *this;
@@ -142,12 +164,16 @@ namespace itor {
       ++Iter;
       return {Tmp};
     }
-    constexpr reverse operator+(ptrdiff_t Off) { return {Iter - Off}; }
+    constexpr reverse operator+(ptrdiff_t Off) {
+      return {Iter - Off};
+    }
     constexpr reverse& operator+=(ptrdiff_t Off) {
       Iter = Iter - Off;
       return *this;
     }
-    constexpr reverse operator-(ptrdiff_t Off) { return {Iter + Off}; }
+    constexpr reverse operator-(ptrdiff_t Off) {
+      return {Iter + Off};
+    }
     constexpr reverse& operator-=(ptrdiff_t Off) {
       Iter = Iter + Off;
       return *this;
@@ -187,18 +213,6 @@ namespace itor {
       return iter;
   }
   //
-  template <class CIter>
-  constexpr CIter jump(CIter Iter, size_t Size) {
-    if constexpr(is_random<CIter>)
-      Iter = Iter + Size;
-    else
-      while(Size != 0) {
-        ++Iter;
-        --Size;
-      }
-    return as_rreference(Iter);
-  }
-  //
   template <class CIter, class SizeType>
   constexpr decltype(auto) get_forward(CIter&& Iter, SizeType Size = 0) {
     if(is_bilateral<CIter> || Size == 0) {
@@ -227,6 +241,5 @@ namespace itor {
     }
   }
   // target
-}  // namespace itor
-XSL_END
+}  // namespace xsl::itor
 #endif  // !XSL_ITERATOR

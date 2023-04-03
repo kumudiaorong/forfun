@@ -4,8 +4,7 @@
 #include <xsl/bits/def.hpp>
 #include <xsl/bits/iterator.hpp>
 #include <xsl/bits/ts/unvs.hpp>
-XSL_BEGIN
-namespace ranges {
+namespace xsl::ranges {
 
   template <uint_8 Category, class Iter>
   class acsr;  // accessor
@@ -15,15 +14,24 @@ namespace ranges {
     typedef _Val val_type;
     acsr(size_t count, const val_type& val)
       : Val(val)
-      , Size(count) {}
-    constexpr operator bool() const { return Size > 0; }
+      , Size(count) {
+    }
+    constexpr operator bool() const {
+      return Size > 0;
+    }
     constexpr acsr& operator++() {
       --Size;
       return *this;
     }
-    constexpr const val_type& operator*() { return Val; }
-    constexpr bool operator!=(const acsr& ano) const { return Size != ano.Size || Val != ano.Val; }
-    constexpr bool operator==(const acsr& ano) const { return Size == ano.Size && Val == ano.Val; }
+    constexpr const val_type& operator*() {
+      return Val;
+    }
+    constexpr bool operator!=(const acsr& ano) const {
+      return Size != ano.Size || Val != ano.Val;
+    }
+    constexpr bool operator==(const acsr& ano) const {
+      return Size == ano.Size && Val == ano.Val;
+    }
     const val_type& Val;
     size_t Size;
   };
@@ -36,16 +44,25 @@ namespace ranges {
     // clang-format on
     acsr(const iter_type& first, size_t count)
       : First(first)
-      , Size(count) {}
-    constexpr operator bool() const { return Size > 0; }
+      , Size(count) {
+    }
+    constexpr operator bool() const {
+      return Size > 0;
+    }
     constexpr acsr& operator++() {
       ++First;
       --Size;
       return *this;
     }
-    constexpr val_type& operator*() { return *First; }
-    constexpr bool operator!=(const acsr& ano) const { return Size != ano.Size || First != ano.First; }
-    constexpr bool operator==(const acsr& ano) const { return Size == ano.Size && First == ano.First; }
+    constexpr val_type& operator*() {
+      return *First;
+    }
+    constexpr bool operator!=(const acsr& ano) const {
+      return Size != ano.Size || First != ano.First;
+    }
+    constexpr bool operator==(const acsr& ano) const {
+      return Size == ano.Size && First == ano.First;
+    }
     iter_type First;
     size_t Size;
   };
@@ -59,15 +76,24 @@ namespace ranges {
     // clang-format on
     constexpr acsr(const iter_type& first, const iter_type& last)
       : First(first)
-      , Last(last) {}
-    constexpr operator bool() const { return First != Last; }
+      , Last(last) {
+    }
+    constexpr operator bool() const {
+      return First != Last;
+    }
     constexpr acsr& operator++() {
       ++First;
       return *this;
     }
-    constexpr val_type& operator*() { return *First; }
-    constexpr bool operator!=(const acsr& ano) const { return First != ano.First || Last != ano.Last; }
-    constexpr bool operator==(const acsr& ano) const { return First == ano.First && Last == ano.Last; }
+    constexpr val_type& operator*() {
+      return *First;
+    }
+    constexpr bool operator!=(const acsr& ano) const {
+      return First != ano.First || Last != ano.Last;
+    }
+    constexpr bool operator==(const acsr& ano) const {
+      return First == ano.First && Last == ano.Last;
+    }
     iter_type First, Last;
   };
   template <class SizeType, class T, ts::enable<ts::has::opeartor_simple_assignment<size_t, SizeType>> = 0>
@@ -92,6 +118,5 @@ namespace ranges {
   //
   template <class T>
   inline constexpr bool is_acsr = is_xsl_acsr<T>;
-}  // namespace ranges
-XSL_END
+}  // namespace xsl::ranges
 #endif  // !XSL_ACSR

@@ -7,14 +7,13 @@
 #include <xsl/bits/def.hpp>
 #include <xsl/bits/utility.hpp>
 
-
-XSL_BEGIN
-namespace test {
+namespace xsl::test {
   class out_steam {
   public:
     std::ostream *os;  // 文件流或标准输出流
     out_steam()
-      : os(&std::cout) {}
+      : os(&std::cout) {
+    }
     void set_out(const char *filename) {
       del_out();
       os = new std::ofstream{filename, std::ios::out | std::ios::trunc};
@@ -27,12 +26,15 @@ namespace test {
     void del_out() {
       if(os != nullptr && os != &std::cout) {
         auto fs = dynamic_cast<std::ofstream *>(os);
-        if(fs->is_open()) fs->close();
+        if(fs->is_open())
+          fs->close();
         delete os;
       }
       os = nullptr;
     }
-    ~out_steam() { del_out(); }
+    ~out_steam() {
+      del_out();
+    }
   };
   static out_steam os{};
 #ifdef TEST_PROC_PRINT
@@ -55,8 +57,12 @@ namespace test {
     /*operator int() {
             return d;
     }*/
-    constexpr bool operator!=(const test_t& Ano) { return c != Ano.c || d != Ano.d; }
-    constexpr bool operator==(const test_t& Ano) { return c == Ano.c && d == Ano.d; }
+    constexpr bool operator!=(const test_t& Ano) {
+      return c != Ano.c || d != Ano.d;
+    }
+    constexpr bool operator==(const test_t& Ano) {
+      return c == Ano.c && d == Ano.d;
+    }
   };
 
   class test_p {
@@ -90,15 +96,28 @@ namespace test {
       Ano.Ptr = nullptr;
       return *this;
     }
-    constexpr bool operator!=(const test_p& Ano) { return *Ptr != *Ano.Ptr; }
-    constexpr bool operator==(const test_p& Ano) { return *Ptr == *Ano.Ptr; }
-    void test_func00(test_p) { PROC_PRINT(void _test_p(test_p t)); }
-    void test_func01(test_p) const { PROC_PRINT(void _test_p(test_p t) const); }
-    void test_func02(test_p) & { PROC_PRINT(void _test_p(test_p t)); }
-    operator int() { return *Ptr; }
+    constexpr bool operator!=(const test_p& Ano) {
+      return *Ptr != *Ano.Ptr;
+    }
+    constexpr bool operator==(const test_p& Ano) {
+      return *Ptr == *Ano.Ptr;
+    }
+    void test_func00(test_p) {
+      PROC_PRINT(void _test_p(test_p t));
+    }
+    void test_func01(test_p) const {
+      PROC_PRINT(void _test_p(test_p t) const);
+    }
+    void test_func02(test_p) & {
+      PROC_PRINT(void _test_p(test_p t));
+    }
+    operator int() {
+      return *Ptr;
+    }
     ~test_p() {
       PROC_PRINT(~test_p());
-      if(Ptr) delete Ptr;
+      if(Ptr)
+        delete Ptr;
     }
   };
 
@@ -116,7 +135,6 @@ xsl::test::os << "\n"
   void print(_Ctr& ctr) {
     for(auto&& e : ctr)
       xsl::test::os << e << ' ';
-    (*xsl::test::os.os) << std::endl;
   }
   template <template <typename...> class _Ctr, typename... _Tps>
   void rprint(_Ctr<char, _Tps...>& Ctr) {
@@ -147,12 +165,14 @@ xsl::test::os << "\n"
   void print(Ctr<test_p, Tps...>& _Ctr) {
     for(auto&& t : _Ctr)
       xsl::test::os << *t.Ptr << ' ';
-    (*xsl::test::os.os) << std::endl;
   }
   template <template <typename...> class Ctr, typename... Tps>
   void rprint(Ctr<test_p, Tps...>& _Ctr) {
     for(auto b = _Ctr.rbegin(), e = _Ctr.rend(); b != e; ++b)
-      xsl::test::os << *(*b).Ptr;
+      xsl::test::os << *(*b).Ptr << ' ';
+  }
+  void endl() {
+    xsl::test::os << '\n';
   }
 //
 #define TEST_RET_PRINT(Text, Proc, Size) \
@@ -171,6 +191,5 @@ xsl::test::os << " Size:" << Size << "\n\n";
   // std::cout << is_norm_func<decltype(&test_p::test_func01)>;
   // std::cout << is_norm_func<decltype(test_p::test_func02)>;
   // std::cout << is_norm_func<decltype(&test_p::test_func02)> << '\n';
-}  // namespace test
-XSL_END
+}  // namespace xsl::test
 #endif  //! XSL_TEST

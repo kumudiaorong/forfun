@@ -4,9 +4,8 @@
 #include <xsl/bits/def.hpp>
 #include <xsl/bits/ts/def.hpp>
 #include <xsl/bits/ts/is.hpp>
-#include <xsl/bits/ts/remove.hpp>
-XSL_BEGIN
-namespace ts {
+#include <xsl/bits/ts/rm.hpp>
+namespace xsl::ts {
   namespace impl {
     template <bool>
     struct enable : tp::_1<bool> {};
@@ -17,28 +16,12 @@ namespace ts {
 
   template <bool Con>
   using enable = typename impl::enable<Con>::type;
-  namespace impl {
-    // template <bool Con>
-    // struct conditional {
-    //   template <class T, class>
-    //   using type = T;
-    // };
-    // //
-    // template <>
-    // struct conditional<false> {
-    //   template <class, class T>
-    //   using type = T;
-    // };
-    //
-    template <bool Con, class True, class False>
-    struct conditional : tp::_1<True> {};
-    //
-    template <class True, class False>
-    struct conditional<false, True, False> : tp::_1<False> {};
 
-  }  // namespace impl
-  template <bool Con, class True, class False>
-  using conditional = typename impl::conditional<Con, True, False>::type;
+  template <class This, class Arg>
+  using enable_construct = enable<!is::same<This, rm::cvr<Arg>>>;
+
+  template <bool Con, template <class> class Pre, class T>
+  using conditional_apply = conditional<Con, Pre<T>, T>;
   template <class T>
   inline constexpr bool is_func = !is::ref<T> && (is::same<rm::cst<T>, const T> || !ts::is::same<T, T>);
   namespace impl {
@@ -54,6 +37,5 @@ namespace ts {
   template <class T>
   using decay = typename impl::decay<T>::type;
 
-}  // namespace ts
-XSL_END
+}  // namespace xsl::ts
 #endif  // TOT_H

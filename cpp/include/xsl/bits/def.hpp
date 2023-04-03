@@ -1,13 +1,14 @@
 #ifndef XSL_BASE_DEF
 #define XSL_BASE_DEF
-//x standard library
-#include"pf/def.h"
-inline void pass() {}
-static int n1{}, n2{}, n3{}, n4{ }, n5{ };
+// x standard library
+#include "pf/def.h"
+inline void pass() {
+}
+static int n1{}, n2{}, n3{}, n4{}, n5{};
 
-XSL_BEGIN
-static const size_t npos = static_cast<size_t>(-1);
+namespace xsl {
+  static const size_t npos = static_cast<size_t>(-1);
+  struct tag_store {};
+}  // namespace xsl
 
-XSL_END
-
-#endif//XSL_BASE_DEF
+#endif  // XSL_BASE_DEF

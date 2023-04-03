@@ -35,9 +35,9 @@ AllowShortCaseLabelsOnASingleLine: false
 # 允许短的枚举放在同一行
 AllowShortEnumsOnASingleLine: true
 # 允许短的函数放在同一行
-AllowShortFunctionsOnASingleLine: All
+AllowShortFunctionsOnASingleLine: None
 # 允许短的if语句保持在同一行
-AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortIfStatementsOnASingleLine: Never
 # 允许短的匿名函数lamda表达式放在同一行
 AllowShortLambdasOnASingleLine: All
 # 允许短的循环while保持在同一行

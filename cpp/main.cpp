@@ -1,17 +1,20 @@
 #include <boost/type_index.hpp>
+#include <cstddef>
 #include <iostream>
+#include <ostream>
 #include <type_traits>
 #include <utility>
 
-#include "xsl/bits/test.hpp"
-#define XSL_TEST
 #define TEST_PROC_PRINT
 // #include <xsl/bits/test.hpp>
 // #include <xsl/map.hpp>
 // #include <xsl/net.hpp>
 // #include <xsl/ranges.hpp>
+#include <list>
+#include <xsl/bits/test.hpp>
+// #include <xsl/bits/ranges/vlr.hpp>
 // #include <xsl/vector.hpp>
-#include <xsl/bits/str/test.hpp>
+#include <tuple>
 using namespace xsl;
 template <class T>
 class tclass {
@@ -19,11 +22,28 @@ public:
   T n;
   template <class... Args>
   tclass(Args&&...args)
-    : n(forward<Args>(args)...) {}
+    : n(forward<Args>(args)...) {
+  }
 };
 int main() {
-  xsl_test_basic_string();
-  // xsl::test::os << 1;
+  ::size_t i;
+  // test::xsl_test_list(); 
+  // test::xsl_test_vector();
+  // vector<test::test_p> vec{};
+  // vec.insert(vec.begin(), {0, 1, 2, 3, 4});
+  // test::print(vec);
+  // test::endl();
+  // ranges::vlr<test::test_p> v{};
+  // v.merge(vec.begin(), 2);
+  // test::print(v);
+  // test::endl();
+  // v.merge(vec.begin(), --vec.end());
+  // test::print(v);
+  // test::endl();
+  // auto [a, b] = tuple(t[0], t[1]);
+  // tuple(t[0], t[1]);
+  // auto [c, d] = tuple(1, 2);
+  // auto t = std::tuple(1, 2);
   // xsl::te;
   // xsl::net::http::client cli{};
   // // auto id = cli.get("http://www.baidu.com/", {});

@@ -1,22 +1,15 @@
 #pragma once
+#include "xsl/bits/ts/has.hpp"
+#include "xsl/bits/ts/unvs.hpp"
 #ifndef XSL_BASIC_STRING
 #define XSL_BASIC_STRING
 #include <initializer_list>
 #include <xsl/bits/allocator.hpp>
 #include <xsl/bits/batch.hpp>
 #include <xsl/bits/exception.hpp>
-// #include <xsl/bits/compare.hpp>
-// #include <xsl/bits/def.hpp>
-// #include <xsl/bits/iterator.hpp>
 #include <xsl/bits/pf/memory.hpp>
-#include <xsl/bits/ranges/acsr.hpp>
-// #include <xsl/bits/str/algo.hpp>
-// #include <xsl/bits/ts/unvs.hpp>
-// #include <xsl/bits/ts/is.hpp>
-// #include <xsl/bits/utility.hpp>
 
-XSL_BEGIN
-namespace str {
+namespace xsl::str {
   template <class _Val>
   class basic_string_view {
     //
@@ -32,46 +25,64 @@ namespace str {
     //
     constexpr basic_string_view()
       : Head()
-      , Size() {}
+      , Size() {
+    }
     //
-    constexpr basic_string_view(const basic_string_view& ano, size_type index, size_type count = npos)
-      : basic_string_view(ano.Head + index, count == npos ? ano.size : count) {}
+    constexpr basic_string_view(const basic_string_view& ano, size_type index, size_type count)
+      : basic_string_view(ano.Head + index, count == npos ? ano.size : count) {
+    }
     //
-    constexpr basic_string_view(const val_type *first, size_type count)
+    template <class SizeType, ts::enable<ts::has::opeartor_simple_assignment<size_type, SizeType>> = 0>
+    constexpr basic_string_view(const val_type *first, SizeType count)
       : Head(first)
-      , Size(count) {}
+      , Size(count) {
+    }
     //
     constexpr basic_string_view(const val_type *first)
-      : basic_string_view(first, batch::length(first)) {}
+      : basic_string_view(first, batch::length(first)) {
+    }
     //
     constexpr basic_string_view(const val_type *first, const val_type *last)
-      : basic_string_view(first, last - first) {}
+      : basic_string_view(first, last - first) {
+    }
     //
     constexpr basic_string_view(const basic_string_view&) = default;
     //
     constexpr basic_string_view(basic_string_view&&) = default;
     //
-    constexpr basic_string_view& operator=(const val_type *first) { return assign(first, batch::length(first)); }
+    constexpr basic_string_view& operator=(const val_type *first) {
+      return assign(first, batch::length(first));
+    }
     //
-    constexpr basic_string_view& operator=(basic_string_view&& ano) noexcept { return assign(ano.Head, ano.Size); }
+    constexpr basic_string_view& operator=(basic_string_view&& ano) noexcept {
+      return assign(ano.Head, ano.Size);
+    }
     //
-    constexpr basic_string_view& operator=(const basic_string_view& ano) { return assign(ano.Head, ano.Size); }
+    constexpr basic_string_view& operator=(const basic_string_view& ano) {
+      return assign(ano.Head, ano.Size);
+    }
     //
-    constexpr basic_string_view& assign(const basic_string_view& ano) { return assign(ano.Head, ano.Size); }
+    constexpr basic_string_view& assign(const basic_string_view& ano) {
+      return assign(ano.Head, ano.Size);
+    }
     //
     constexpr basic_string_view& assign(const basic_string_view& ano, size_type index, size_type count = npos) {
       return assign(ano.Head + index, count == npos ? ano.Size : count);
     }
     //
-    constexpr basic_string_view& assign(basic_string_view&& ano) { return assign(ano.Head, ano.Size); }
+    constexpr basic_string_view& assign(basic_string_view&& ano) {
+      return assign(ano.Head, ano.Size);
+    }
     //
     constexpr basic_string_view& assign(const val_type *first, size_type count) {
-      Head = XSL addr(*first);
+      Head = addr(*first);
       Size = count;
       return *this;
     }
     //
-    constexpr basic_string_view& assign(const val_type *first) { return assign(first, Len<size_type>(first)); }
+    constexpr basic_string_view& assign(const val_type *first) {
+      return assign(first, Len<size_type>(first));
+    }
     //
     constexpr basic_string_view& assign(const val_type *first, const val_type *last) {
       return assign(first, last - first);
@@ -79,56 +90,84 @@ namespace str {
 
     //
     constexpr const val_type& at(size_type index) const {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head[index];
     }
     //
     constexpr const val_type& operator[](size_type index) const {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head[index];
     }
     //
     constexpr const val_type& front() const {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head[0];
     }
     //
     constexpr const val_type& back() const {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head[Size - 1];
     }
     //
-    constexpr citer begin() const { return Head; }
-    //
-    constexpr const iter end() const { return Head + Size; }
-    //
-    constexpr criter rbegin() const { return Head + Size - 1; }
-    //
-    constexpr criter rend() const { return Head - 1; }
-    constexpr citer cbegin() const { return Head; }
-    //
-    constexpr citer cend() const { return Head + Size; }
-    //
-    constexpr criter crbegin() const { return Head + Size - 1; }
-    //
-    constexpr criter crend() const { return Head - 1; }
-    //
-    constexpr const val_type *data() const {
-      XSL_EMPTY_CHECK(this->invalid());
+    constexpr citer begin() const {
       return Head;
     }
     //
-    constexpr bool invalid() const noexcept { return Head == nullptr || Size == 0; }
+    constexpr const iter end() const {
+      return Head + Size;
+    }
     //
-    constexpr bool empty() const noexcept { return Size == 0; }
+    constexpr criter rbegin() const {
+      return Head + Size - 1;
+    }
     //
-    constexpr size_type size() const noexcept { return Size; }
+    constexpr criter rend() const {
+      return Head - 1;
+    }
+    constexpr citer cbegin() const {
+      return Head;
+    }
     //
-    constexpr void remove_prefix(size_type count) { Head += count; }
+    constexpr citer cend() const {
+      return Head + Size;
+    }
     //
-    constexpr void remove_suffix(size_type count) { Size -= count; }
+    constexpr criter crbegin() const {
+      return Head + Size - 1;
+    }
     //
-    constexpr void swap(basic_string_view& ano) { XSL swap(*this, ano); }
+    constexpr criter crend() const {
+      return Head - 1;
+    }
+    //
+    constexpr const val_type *data() const {
+      ecp::check_empty_object(invalid());
+      return Head;
+    }
+    //
+    constexpr bool invalid() const noexcept {
+      return Head == nullptr || Size == 0;
+    }
+    //
+    constexpr bool empty() const noexcept {
+      return Size == 0;
+    }
+    //
+    constexpr size_type size() const noexcept {
+      return Size;
+    }
+    //
+    constexpr void remove_prefix(size_type count) {
+      Head += count;
+    }
+    //
+    constexpr void remove_suffix(size_type count) {
+      Size -= count;
+    }
+    //
+    constexpr void swap(basic_string_view& ano) {
+      swap(*this, ano);
+    }
     //
     constexpr size_type copy(val_type *dest, size_type count, size_type index = 0) const {
       size_type ret = min(count, Size - index);
@@ -140,13 +179,18 @@ namespace str {
       return {Head + index, min(count, Size - index)};
     }
     //
-    constexpr int_8 compare(const val_type *ptr) const { return compare(ptr, batch::length(ptr)); }
+    constexpr int_8 compare(const val_type *ptr) const {
+      return compare(ptr, batch::length(ptr));
+    }
     //
-    constexpr int_8 compare(const basic_string_view& ano) const { return compare(ano.Head, ano.Size); }
+    constexpr int_8 compare(const basic_string_view& ano) const {
+      return compare(ano.Head, ano.Size);
+    }
     //
     constexpr int_8 compare(const val_type *ptr, size_type count) const {
       int_8 ret = batch::compare(Head, ptr, min(Size, count));
-      if(ret != 0) return ret;
+      if(ret != 0)
+        return ret;
       if(Size < count)
         return -1;
       else if(Size > count)
@@ -166,7 +210,8 @@ namespace str {
     //
     constexpr size_t find_first_not_of(val_type val, size_type index = 0) const noexcept {
       for(; index < Size; ++index)
-        if(Head[index] != val) return index;
+        if(Head[index] != val)
+          return index;
       return npos;
     }
     //
@@ -177,8 +222,8 @@ namespace str {
     //
   };
   //
-}  // namespace str
-namespace comp {
+}  // namespace xsl::str
+namespace xsl::comp {
   template <>
   struct comp::traits<const char *> {
     using comp_category = std::strong_ordering;
@@ -190,9 +235,9 @@ namespace comp {
     using comp_category = std::strong_ordering;
     using comp_type = str::basic_string_view<char>;
   };
-}  // namespace comp
+}  // namespace xsl::comp
 //
-namespace str {
+namespace xsl::str {
   template <class Val>
   constexpr typename comp::traits<basic_string_view<Val>>::comp_category operator<=>(
     const basic_string_view<Val>& l, const basic_string_view<Val>& r) {
@@ -205,7 +250,7 @@ namespace str {
     return l.compare(r.data(), r.size()) == 0;
   }
 
-  template <class _Val, class _Alloc = default_allocator<_Val>>
+  template <class _Val, class _Alloc>
   class basic_string {
     //
   public:
@@ -243,7 +288,8 @@ namespace str {
     }
     //
     constexpr basic_string(const basic_string& ano, size_type index, size_type count)
-      : basic_string(ano.Head + index, count > ano.Size - index ? ano.size : count) {}
+      : basic_string(ano.Head + index, count > ano.Size - index ? ano.size : count) {
+    }
     //
     template <class UCFIter, ts::enable<itor::is_forward<UCFIter>> = 0>
     constexpr basic_string(UCFIter first, size_type count)
@@ -252,14 +298,17 @@ namespace str {
     }
     //
     constexpr basic_string(const val_type *first)
-      : basic_string(first, batch::length(first)) {}
+      : basic_string(first, batch::length(first)) {
+    }
     //
     template <class UCFIter, ts::enable<itor::is_forward<UCFIter>> = 0>
     constexpr basic_string(UCFIter first, UCFIter last)
-      : basic_string(itor::get_unwrapped(first), batch::length(first, last)) {}
+      : basic_string(itor::get_unwrapped(first), batch::length(first, last)) {
+    }
     //
     constexpr basic_string(const basic_string& ano)
-      : basic_string(ano.Head, ano.Size) {}
+      : basic_string(ano.Head, ano.Size) {
+    }
     //
     constexpr basic_string(basic_string&& ano) noexcept
       : Alc(as_rreference(ano.Alc))
@@ -272,10 +321,12 @@ namespace str {
     // template<class Similar_String_View, enable<type::is_constructible<basic_string_view<val_type>,
     // type::_n<decay<Similar_String_View>>>> = 0>
     constexpr basic_string(const basic_string_view<val_type>& ano)
-      : basic_string(ano.data(), ano.size()) {}
+      : basic_string(ano.data(), ano.size()) {
+    }
     //
     constexpr basic_string(const basic_string_view<val_type>& ano, size_type index, size_type count)
-      : basic_string(ano.data() + index, count > ano.size() - index ? ano.size() : count) {}
+      : basic_string(ano.data() + index, count > ano.size() - index ? ano.size() : count) {
+    }
     //
     constexpr ~basic_string() {
       if(!this->invalid()) {
@@ -284,22 +335,33 @@ namespace str {
       }
     }
     //
-    constexpr basic_string& operator=(const val_type *first) { return this->Assign(first, batch::length(first)); }
+    constexpr basic_string& operator=(const val_type *first) {
+      return this->Assign(first, batch::length(first));
+    }
     //
-    constexpr basic_string& operator=(basic_string&& ano) noexcept { return this->assign(as_rreference(ano)); }
+    constexpr basic_string& operator=(basic_string&& ano) noexcept {
+      return this->assign(as_rreference(ano));
+    }
     //
-    constexpr basic_string& operator=(const basic_string& ano) { return this->Assign(ano.Head, ano.Size); }
+    constexpr basic_string& operator=(const basic_string& ano) {
+      return this->Assign(ano.Head, ano.Size);
+    }
     //
-    constexpr basic_string& assign(size_type count, val_type Val = val_type{}) { return this->Assign(count, Val); }
+    constexpr basic_string& assign(size_type count, val_type Val = val_type{}) {
+      return this->Assign(count, Val);
+    }
     //
-    constexpr basic_string& assign(const basic_string& ano) { return this->Assign(ano.Head, ano.Size); }
+    constexpr basic_string& assign(const basic_string& ano) {
+      return this->Assign(ano.Head, ano.Size);
+    }
     //
     constexpr basic_string& assign(const basic_string& ano, size_type index, size_type count = npos) {
       return this->Assign(ano.Head + index, count == npos ? ano.Size : count);
     }
     //
     constexpr basic_string& assign(basic_string&& ano) {
-      if(!this->invalid()) Alc.deallocate(Head);
+      if(!this->invalid())
+        Alc.deallocate(Head);
       Alc = as_rreference(ano.Alc);
       Head = ano.Head;
       Cap = ano.Cap;
@@ -313,7 +375,9 @@ namespace str {
       return this->Assign(itor::get_unwrapped(first), count);
     }
     //
-    constexpr basic_string& assign(const val_type *first) { return this->Assign(first, batch::length(first)); }
+    constexpr basic_string& assign(const val_type *first) {
+      return this->Assign(first, batch::length(first));
+    }
     //
     template <class UCFIter, ts::enable<itor::is_forward<UCFIter>> = 0>
     constexpr basic_string& assign(UCFIter first, UCFIter last) {
@@ -321,93 +385,130 @@ namespace str {
     }
     //
     constexpr val_type& at(size_type index) {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head[index];
     }
     //
     constexpr const val_type& at(size_type index) const {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head[index];
     }
     //
     constexpr val_type& operator[](size_type index) {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head[index];
     }
     //
     constexpr const val_type& operator[](size_type index) const {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head[index];
     }
     //
     constexpr val_type& front() {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head[0];
     }
     //
     constexpr const val_type& front() const {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head[0];
     }
     //
     constexpr val_type& back() {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head[Size - 1];
     }
     //
     constexpr const val_type& back() const {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head[Size - 1];
     }
     //
-    constexpr iter begin() { return Head; }
+    constexpr iter begin() {
+      return Head;
+    }
     //
-    constexpr citer begin() const { return Head; }
+    constexpr citer begin() const {
+      return Head;
+    }
     //
-    constexpr iter end() { return Head + Size; }
+    constexpr iter end() {
+      return Head + Size;
+    }
     //
-    constexpr citer end() const { return Head + Size; }
+    constexpr citer end() const {
+      return Head + Size;
+    }
     //
-    constexpr riter rbegin() { return Head + Size - 1; }
+    constexpr riter rbegin() {
+      return Head + Size - 1;
+    }
     //
-    constexpr const riter rbegin() const { return iter(Head + Size - 1); }
+    constexpr const riter rbegin() const {
+      return iter(Head + Size - 1);
+    }
     //
-    constexpr riter rend() { return Head - 1; }
+    constexpr riter rend() {
+      return Head - 1;
+    }
     //
-    constexpr criter rend() const { return Head - 1; }
+    constexpr criter rend() const {
+      return Head - 1;
+    }
     //
     constexpr val_type *data() {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head;
     }
     //
     constexpr const val_type *data() const {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       return Head;
     }
-    constexpr const iter cbegin() const { return Head; }
-    //
-    constexpr citer cend() const { return Head + Size; }
-    //
-    constexpr const riter crbegin() const { return Head + Size - 1; }
-    //
-    constexpr criter crend() const { return Head - 1; }
-    //
-    constexpr bool invalid() const noexcept { return Head == nullptr; }
-    //
-    constexpr bool empty() const noexcept { return Size == 0; }
-    //
-    constexpr size_type size() const noexcept { return Size; }
-    //
-    constexpr void reserve(size_type NewCap) {
-      if(Cap < NewCap + 1) recap(NewCap + 1, 0, 0);
+    constexpr const iter cbegin() const {
+      return Head;
     }
     //
-    constexpr size_type capacity() const { return Cap ? Cap - 1 : 0; }
+    constexpr citer cend() const {
+      return Head + Size;
+    }
     //
-    constexpr void shrink_to_fit() { recap(Size + 1, 0, 0); }
+    constexpr const riter crbegin() const {
+      return Head + Size - 1;
+    }
     //
-    constexpr void clear() { this->erase(Head, Size); }
+    constexpr criter crend() const {
+      return Head - 1;
+    }
+    //
+    constexpr bool invalid() const noexcept {
+      return Head == nullptr;
+    }
+    //
+    constexpr bool empty() const noexcept {
+      return Size == 0;
+    }
+    //
+    constexpr size_type size() const noexcept {
+      return Size;
+    }
+    //
+    constexpr void reserve(size_type NewCap) {
+      if(Cap < NewCap + 1)
+        recap(NewCap + 1, 0, 0);
+    }
+    //
+    constexpr size_type capacity() const {
+      return Cap ? Cap - 1 : 0;
+    }
+    //
+    constexpr void shrink_to_fit() {
+      recap(Size + 1, 0, 0);
+    }
+    //
+    constexpr void clear() {
+      this->erase(Head, Size);
+    }
     //
     constexpr iter insert(size_type index, size_type count, val_type Val = val_type{}) {
       return this->Set(Head + index, count, Val);
@@ -425,7 +526,9 @@ namespace str {
       return this->Copy(Head + index, &ano[ins_index], count == npos ? ano.Size - ins_index : count);
     }
     //
-    constexpr iter insert(citer where, val_type val) { return this->Set(where, 1, val); }
+    constexpr iter insert(citer where, val_type val) {
+      return this->Set(where, 1, val);
+    }
     //
     constexpr iter insert(citer where, size_type count, val_type val = val_type{}) {
       return this->Set(where, count, val);
@@ -436,7 +539,9 @@ namespace str {
       return this->Copy(where, itor::get_unwrapped(first), count);
     }
     //
-    constexpr iter insert(citer where, const val_type *ptr) { return this->Copy(where, ptr, batch::length(ptr)); }
+    constexpr iter insert(citer where, const val_type *ptr) {
+      return this->Copy(where, ptr, batch::length(ptr));
+    }
     //
     template <class Unchecked_Iter, ts::enable<itor::is<Unchecked_Iter>> = 0>
     constexpr iter insert(citer where, Unchecked_Iter first, Unchecked_Iter last) {
@@ -447,18 +552,24 @@ namespace str {
       return this->erase(Head + index, count == npos ? Size : count);
     }
     //
-    constexpr iter erase(citer where) { return this->erase(where, 1); }
+    constexpr iter erase(citer where) {
+      return this->erase(where, 1);
+    }
     //
     constexpr iter erase(citer first, citer last) {
       return this->erase(const_cast<val_type *>((const val_type *)first), static_cast<size_type>(last - first));
     }
     //
-    constexpr void push_back(val_type val) { return this->Set(Head + Size, 1, val); }
+    constexpr void push_back(val_type val) {
+      return this->Set(Head + Size, 1, val);
+    }
     //
-    constexpr void pop_back() { return this->erase(Head + Size - 1, 1); }
+    constexpr void pop_back() {
+      return this->erase(Head + Size - 1, 1);
+    }
     //
     constexpr basic_string& append(size_type count, val_type val) {
-      XSL_EMPTY_CHECK(this->invalid());
+      ecp::check_empty_object(invalid());
       this->Set(Head + Size, count, val);
       return *this;
     }
@@ -506,7 +617,7 @@ namespace str {
     }
     //
     constexpr basic_string& operator+=(val_type val) {
-      xsl::check_empty_object(invalid());
+      ecp::check_empty_object(invalid());
       this->Set(Head + Size, 1, val);
       return *this;
     }
@@ -526,13 +637,18 @@ namespace str {
       return *this;
     }
     //
-    constexpr int_8 compare(const basic_string_view<val_type>& ano) const { return compare(ano.data(), ano.size()); }
+    constexpr int_8 compare(const basic_string_view<val_type>& ano) const {
+      return compare(ano.data(), ano.size());
+    }
     //
-    constexpr int_8 compare(const val_type *first) const { return compare(first, batch::length(first)); }
+    constexpr int_8 compare(const val_type *first) const {
+      return compare(first, batch::length(first));
+    }
     //
     constexpr int_8 compare(const val_type *first, size_type count) const {
       int_8 ret = batch::compare(Head, first, min(Size, count));
-      if(ret != 0) return ret;
+      if(ret != 0)
+        return ret;
       if(Size < count)
         return -1;
       else if(Size > count)
@@ -553,7 +669,9 @@ namespace str {
       return strstr(Head, Size, first);
     }
     // Sunday algorithm
-    constexpr operator basic_string_view<val_type>() const { return {Head, Size}; }
+    constexpr operator basic_string_view<val_type>() const {
+      return {Head, Size};
+    }
   protected:
     //
     // default_allocator<_Val, _SizeType> Alc;
@@ -627,11 +745,10 @@ namespace str {
     }
   };
 
-  using string = basic_string<char>;
-
   template <class Val>
-  constexpr basic_string<Val> operator+(const basic_string_view<Val>& l, const basic_string_view<Val>& r) {
-    basic_string<Val> str = l;
+  constexpr basic_string<Val, alc::default_allocator<Val>> operator+(
+    const basic_string_view<Val>& l, const basic_string_view<Val>& r) {
+    basic_string<Val, alc::default_allocator<Val>> str = l;
     str += r;
     return as_rreference(str);
   }
@@ -702,12 +819,12 @@ namespace str {
     return as_rreference(r += val);
   }
   //
-  template <class Val, class Alloc = default_allocator<Val>>
+  template <class Val, class Alloc = alc::default_allocator<Val>>
   constexpr basic_string<Val, Alloc> operator+(const basic_string_view<Val>& l, Val val) {
     return as_rreference(basic_string<Val, Alloc>{l} += val);
   }
   //
-  template <class Val, class Alloc = default_allocator<Val>>
+  template <class Val, class Alloc = alc::default_allocator<Val>>
   constexpr basic_string<Val, Alloc> operator+(Val val, const basic_string_view<Val>& r) {
     return as_rreference(basic_string<Val, Alloc>{1, val} += r);
   }
@@ -739,6 +856,5 @@ namespace str {
   constexpr bool operator==(const basic_string<Val, Alloc>& l, const Val *r) {
     return l.compare(r) == 0;
   }
-}  // namespace str
-XSL_END
+}  // namespace xsl::str
 #endif  // !XSL_BASIC_STRING
