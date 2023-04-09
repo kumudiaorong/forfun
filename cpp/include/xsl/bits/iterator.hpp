@@ -4,10 +4,11 @@
 #include <xsl/bits/compare.hpp>
 // #include <xsl/bits/container.hpp>
 #include <xsl/bits/def.hpp>
+#include <xsl/bits/functor.hpp>
 #include <xsl/bits/ts/as.hpp>
 #include <xsl/bits/ts/is.hpp>
 #include <xsl/bits/ts/rm.hpp>
-#include <xsl/bits/ts/unvs.hpp>
+#include <xsl/bits/ts/ts.hpp>
 #include <xsl/bits/utility.hpp>
 
 namespace xsl::itor {
@@ -26,6 +27,7 @@ namespace xsl::itor {
 	typedef tag_random          iter_category;
 	typedef ptr_wrapper 		    self_type;
 	typedef T		 								val_type;
+	typedef ptrdiff_t		 				diff_type;
 	typedef std::weak_ordering  comp_category;
 	typedef T* 	                unwrap_type;
     // clang-format on
@@ -61,6 +63,9 @@ namespace xsl::itor {
       ++Ptr;
       return {Tmp};
     }
+    constexpr ptr_wrapper operator+(diff_type off) {
+      return {Ptr + off};
+    }
     constexpr ptr_wrapper& operator--() {
       --Ptr;
       return *this;
@@ -69,6 +74,12 @@ namespace xsl::itor {
       T *Tmp = Ptr;
       --Ptr;
       return {Tmp};
+    }
+    constexpr ptr_wrapper operator-(diff_type off) {
+      return {Ptr - off};
+    }
+    constexpr diff_type operator-(const ptr_wrapper& ano) {
+      return Ptr - ano.Ptr;
     }
     constexpr comp_category compare(const ptr_wrapper& ano) const {
       return Ptr <=> ano.Ptr;
@@ -212,34 +223,44 @@ namespace xsl::itor {
     else
       return iter;
   }
-  //
-  template <class CIter, class SizeType>
-  constexpr decltype(auto) get_forward(CIter&& Iter, SizeType Size = 0) {
-    if(is_bilateral<CIter> || Size == 0) {
-      if constexpr(is_random<CIter>)
-        return (Iter - Size).base();
-      else {
-        while(Size-- != 0)
-          --Iter;
-        return Iter.base();
-      }
-    } else
-      throw "error";
-    return Iter;
+  template <class Iter1, class Iter2,
+    ts::enable<ts::is::same<typename traits<Iter1>::val_type, typename traits<Iter2>::val_type>> = 0>
+  constexpr void swap(const Iter1& l, const Iter2& r) {
+    xsl::swap(*l, *r);
   }
+  // template <class Iter, class Pre>
+  // constexpr void max(const Iter& l, const Iter& r, Pre pre = fc::less<typename traits<Iter>::val_type>{}) {
+  //   pre(*l, *r) ? l : r;
+  // }
+
   //
-  template <class CIter, class SizeType>
-  constexpr CIter get_tar(CIter&& Iter, SizeType Count) {
-    if constexpr(ts::has::opeartor_addition<ts::rm::cvr<CIter>, SizeType>)
-      return Iter + Count;
-    else if constexpr(ts::has::opeartor_addition_assignment<ts::rm::cvr<CIter>, SizeType>)
-      return Iter += Count;
-    else {
-      while(Count-- > 0)
-        ++Iter;
-      return Iter;
-    }
-  }
+  // template <class CIter, class SizeType>
+  // constexpr decltype(auto) get_forward(CIter&& Iter, SizeType Size = 0) {
+  //   if(is_bilateral<CIter> || Size == 0) {
+  //     if constexpr(is_random<CIter>)
+  //       return (Iter - Size).base();
+  //     else {
+  //       while(Size-- != 0)
+  //         --Iter;
+  //       return Iter.base();
+  //     }
+  //   } else
+  //     throw "error";
+  //   return Iter;
+  // }
+  //
+  // template <class CIter, class SizeType>
+  // constexpr CIter get_tar(CIter&& Iter, SizeType Count) {
+  //   if constexpr(ts::has::opeartor_addition<ts::rm::cvr<CIter>, SizeType>)
+  //     return Iter + Count;
+  //   else if constexpr(ts::has::opeartor_addition_assignment<ts::rm::cvr<CIter>, SizeType>)
+  //     return Iter += Count;
+  //   else {
+  //     while(Count-- > 0)
+  //       ++Iter;
+  //     return Iter;
+  //   }
+  // }
   // target
 }  // namespace xsl::itor
 #endif  // !XSL_ITERATOR

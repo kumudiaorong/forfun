@@ -52,6 +52,8 @@ namespace xsl::ls {
     val_type Val;
     list_node *Prev, *Next;
   };
+}  // namespace xsl::ls
+namespace xsl::ls {
   template <class _List>
   class list_iter;
   template <template <class, class> class _List, class _Node, class _Alloc>
@@ -96,11 +98,25 @@ namespace xsl::ls {
       Ptr = Ptr->Prev;
       return *this;
     }
+    //
   private:
     friend class _List<_Node, _Alloc>;
     friend class list_iter<const _List<_Node, _Alloc>>;
+    friend void itor::swap(const list_iter&, const list_iter&);
     node_type *Ptr;
   };
+}  // namespace xsl::ls
+namespace xsl::itor {
+  template <class List>
+  void swap(const ls::list_iter<List> l, const ls::list_iter<List> r) {
+    xsl::swap(l.Ptr->Prev->Next, r.Ptr->Prev->Next);
+    xsl::swap(l.Ptr->Next->Prev, r.Ptr->Next->Prev);
+    xsl::swap(l.Ptr->Prev, r.Ptr->Prev);
+    xsl::swap(l.Ptr->Next, r.Ptr->Next);
+  }
+}  // namespace xsl::itor
+
+namespace xsl::ls {
   template <template <class, class> class _List, class _Node, class _Alloc>
   class list_iter<const _List<_Node, _Alloc>> {
   public:
@@ -542,11 +558,5 @@ namespace xsl::ls {
       return nex;
     }
   };
-
-#ifdef XSL_TEST
-  //
-
-#endif
-  //
 }  // namespace xsl::ls
 #endif  // !XSL_LIST

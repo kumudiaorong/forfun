@@ -6,15 +6,17 @@
 #include <utility>
 
 #define TEST_PROC_PRINT
-// #include <xsl/bits/test.hpp>
+#include <xsl/bits/test.hpp>
 // #include <xsl/map.hpp>
 // #include <xsl/net.hpp>
 // #include <xsl/ranges.hpp>
 #include <list>
-#include <xsl/bits/test.hpp>
 // #include <xsl/bits/ranges/vlr.hpp>
-// #include <xsl/vector.hpp>
+#include <queue>
 #include <tuple>
+#include <xsl/bits/heap/test.hpp>
+#include <xsl/heap.hpp>
+#include <xsl/vector.hpp>
 using namespace xsl;
 template <class T>
 class tclass {
@@ -25,9 +27,11 @@ public:
     : n(forward<Args>(args)...) {
   }
 };
+// #include <random>
+
 int main() {
-  ::size_t i;
-  // test::xsl_test_list(); 
+  test::xsl_test_heap();
+  // test::xsl_test_list();
   // test::xsl_test_vector();
   // vector<test::test_p> vec{};
   // vec.insert(vec.begin(), {0, 1, 2, 3, 4});
@@ -51,7 +55,7 @@ int main() {
   // header.try_emplace("User-Agent",
   //   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36");
   // header.try_emplace("Accept",
-  //   "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/"
+  // "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/"
   //   "signed-exchange;v=b3;q=0.7");
   // // header.try_emplace("Upgrade-Insecure-Requests", "1");
   // auto id = cli.get("http://www.csdn.net/", header);

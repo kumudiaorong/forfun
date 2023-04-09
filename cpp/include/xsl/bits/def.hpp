@@ -1,7 +1,7 @@
 #ifndef XSL_BASE_DEF
 #define XSL_BASE_DEF
 // x standard library
-#include "pf/def.h"
+#include <xsl/bits/pf/def.h>
 inline void pass() {
 }
 static int n1{}, n2{}, n3{}, n4{}, n5{};

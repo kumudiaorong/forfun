@@ -1,4 +1,5 @@
 #pragma once
+#include "xsl/bits/pf/def.h"
 #ifndef XSL_VECTOR_SUPPORT
 #define XSL_VECTOR_SUPPORT
 #include <initializer_list>
@@ -14,6 +15,7 @@ namespace xsl::vec {
     //
   public:
     // clang-format off
+	typedef ptrdiff_t 								        diff_type;
 	typedef _Val 								              val_type;
 	typedef _Alloc 								            alloc_type;
 	typedef size_t 								            size_type;
@@ -45,12 +47,12 @@ namespace xsl::vec {
       this->Insert(Head, count);
     }
     //
-    template <class UCFIter, ts::enable<itor::is_forward<UCFIter>> = 0>
+    template <class UCFIter, ts::enable<itor::is<UCFIter>> = 0>
     constexpr vector(UCFIter first, UCFIter last)
       : vector(itor::get_unwrapped(first), batch::length(first, last)) {
     }
     //
-    template <class UCFIter, ts::enable<itor::is_forward<UCFIter>> = 0>
+    template <class UCFIter, ts::enable<itor::is<UCFIter>> = 0>
     constexpr vector(UCFIter first, size_type count)
       : vector(tag_alloc{}, count) {
       this->Insert(Head, itor::get_unwrapped(first), count);
@@ -109,12 +111,12 @@ namespace xsl::vec {
       return *this;
     }
     //
-    template <class UCFIter, ts::enable<itor::is_forward<UCFIter>> = 0>
+    template <class UCFIter, ts::enable<itor::is<UCFIter>> = 0>
     constexpr vector& assign(UCFIter first, size_type count) {
       return this->Assign(itor::get_unwrapped(first), count);
     }
     //
-    template <class UCFIter, ts::enable<itor::is_forward<UCFIter>> = 0>
+    template <class UCFIter, ts::enable<itor::is<UCFIter>> = 0>
     constexpr vector& assign(UCFIter first, UCFIter last) {
       return this->Assign(itor::get_unwrapped(first), batch::length(first, last));
     }

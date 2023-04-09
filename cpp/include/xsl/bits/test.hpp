@@ -131,11 +131,11 @@ xsl::test::os << "\n"
     for(auto&& c : Ctr)
       xsl::test::os << c;
   }
-  template <class _Ctr>
-  void print(_Ctr& ctr) {
-    for(auto&& e : ctr)
-      xsl::test::os << e << ' ';
-  }
+  // template <class _Ctr>
+  // void print(_Ctr& ctr) {
+  //   for(auto&& e : ctr)
+  //     xsl::test::os << e << ' ';
+  // }
   template <template <typename...> class _Ctr, typename... _Tps>
   void rprint(_Ctr<char, _Tps...>& Ctr) {
     for(auto b = Ctr.rbegin(), e = Ctr.rend(); b != e; ++b)

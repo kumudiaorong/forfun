@@ -1,7 +1,7 @@
 #pragma once
 #ifndef XSL_LIST_TEST
 #define XSL_LIST_TEST
-#include <xsl/bits/ls/list.hpp>
+#include <xsl/bits/list/list.hpp>
 #include <xsl/bits/test.hpp>
 namespace xsl::test {
   void xsl_test_list() {

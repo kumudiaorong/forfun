@@ -1,8 +1,8 @@
 #pragma once
-#include "xsl/bits/ts/has.hpp"
-#include "xsl/bits/ts/unvs.hpp"
 #ifndef XSL_BASIC_STRING
 #define XSL_BASIC_STRING
+// #include <xsl/bits/ts/has.hpp>
+// #include <xsl/bits/ts/ts.hpp>
 #include <initializer_list>
 #include <xsl/bits/allocator.hpp>
 #include <xsl/bits/batch.hpp>
@@ -291,7 +291,7 @@ namespace xsl::str {
       : basic_string(ano.Head + index, count > ano.Size - index ? ano.size : count) {
     }
     //
-    template <class UCFIter, ts::enable<itor::is_forward<UCFIter>> = 0>
+    template <class UCFIter, ts::enable<itor::is<UCFIter>> = 0>
     constexpr basic_string(UCFIter first, size_type count)
       : basic_string(tag_alloc{}, count) {
       this->Copy(Head, itor::get_unwrapped(first), count);
@@ -301,7 +301,7 @@ namespace xsl::str {
       : basic_string(first, batch::length(first)) {
     }
     //
-    template <class UCFIter, ts::enable<itor::is_forward<UCFIter>> = 0>
+    template <class UCFIter, ts::enable<itor::is<UCFIter>> = 0>
     constexpr basic_string(UCFIter first, UCFIter last)
       : basic_string(itor::get_unwrapped(first), batch::length(first, last)) {
     }
@@ -370,7 +370,7 @@ namespace xsl::str {
       return *this;
     }
     //
-    template <class UCFIter, ts::enable<itor::is_forward<UCFIter>> = 0>
+    template <class UCFIter, ts::enable<itor::is<UCFIter>> = 0>
     constexpr basic_string& assign(UCFIter first, size_type count) {
       return this->Assign(itor::get_unwrapped(first), count);
     }
@@ -379,7 +379,7 @@ namespace xsl::str {
       return this->Assign(first, batch::length(first));
     }
     //
-    template <class UCFIter, ts::enable<itor::is_forward<UCFIter>> = 0>
+    template <class UCFIter, ts::enable<itor::is<UCFIter>> = 0>
     constexpr basic_string& assign(UCFIter first, UCFIter last) {
       return this->Assign(itor::get_unwrapped(first), batch::length(first, last));
     }
