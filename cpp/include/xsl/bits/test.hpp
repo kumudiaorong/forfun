@@ -67,6 +67,7 @@ namespace xsl::test {
 
   class test_p {
   public:
+    typedef int comp_type;
     int *Ptr;
     test_p()
       : Ptr(new int{}) {
@@ -110,6 +111,9 @@ namespace xsl::test {
     }
     void test_func02(test_p) & {
       PROC_PRINT(void _test_p(test_p t));
+    }
+    int to_comp() {
+      return *Ptr;
     }
     operator int() {
       return *Ptr;
