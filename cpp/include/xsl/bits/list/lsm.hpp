@@ -8,13 +8,14 @@ namespace xsl::ls {
   class lsm {  // list manager
   public:
     // clang-format off
-	typedef _Node 						                    node_type;
-	typedef typename node_type::val_type 						        val_type;
+	typedef _Node 						            node_type;
+	typedef typename node_type::val_type 	val_type;
 	typedef size_t 										    size_type;
     // clang-format on
     constexpr lsm(node_type *head = nullptr)
       : Head(head) {
-      Head->Prev = Head->Next = Head;
+      if(Head != nullptr)
+        Head->prev() = Head->next() = Head;
     }
     constexpr lsm(lsm&& ano)
       : Head(ano.Head) {
@@ -22,18 +23,18 @@ namespace xsl::ls {
     }
     //
     constexpr lsm& operator=(lsm&& ano) noexcept {
-      return this->assign(as_rreference(ano));
+      return this->assign(static_cast<lsm&&>(ano));
     }
     //
-    // constexpr lsm& operator=(const lsm& Ano) { return this->assign(creator{iter{Ano.Head->Next}, Ano.Size}); }
+    // constexpr lsm& operator=(const lsm& Ano) { return this->assign(creator{iter{Ano.Head->next()}, Ano.Size}); }
     //
-    constexpr lsm& assign(lsm&& ano) {
+    constexpr lsm& assign(lsm&& ano)noexcept {
       Head = ano.Head;
       ano.Head = nullptr;
       return *this;
     }
     //
-    // constexpr lsm& assign(const lsm& Ano) { return assign(creator{iter{Ano.Head->Next}, Ano.Size}); }
+    // constexpr lsm& assign(const lsm& Ano) { return assign(creator{iter{Ano.Head->next()}, Ano.Size}); }
     //
     //
     constexpr bool invalid() const {
@@ -41,48 +42,48 @@ namespace xsl::ls {
     }
     //
     constexpr void reuse(node_type *head) {
-      Head->Prev = Head->Next = Head;
+      Head->prev() = Head->next() = Head;
     }
     //
     constexpr node_type *clear() {
       XSL_EMPTY_CHECK(this->invalid());
-      if(Head->Next != Head) {
-        Head->Prev->Next = nullptr;
-        node_type *first = Head->Next;
-        Head->Prev = Head->Next = Head;
+      if(Head->next() != Head) {
+        Head->prev()->next() = nullptr;
+        node_type *first = Head->next();
+        Head->prev() = Head->next() = Head;
         return first;
       }
       return nullptr;
     }
     //
     constexpr node_type *remove(node_type *ptr) {
-      node_type *nex = ptr->Next;
-      this->connect(ptr->Prev, ptr->Next);
+      node_type *nex = ptr->next();
+      this->connect(ptr->prev(), ptr->next());
       return nex;
     }
     //
     constexpr void erase(node_type *first, node_type *last) {
-      this->connect(first->Prev, last);
+      this->connect(first->prev(), last);
     }
     //
     constexpr void push_back(node_type *n) {
-      this->connect(this->connect(Head->Prev, n), Head);
+      this->connect(this->connect(Head->prev(), n), Head);
     }
     //
     constexpr void push_front(node_type *n) {
-      this->connect(n, Head->Next);
+      this->connect(n, Head->next());
       this->connect(Head, n);
     }
     //
     constexpr node_type *pop_back() {
-      node_type *last = Head->Prev;
-      this->connect(Head->Prev->Prev, Head);
+      node_type *last = Head->prev();
+      this->connect(Head->prev()->prev(), Head);
       return last;
     }
     //
     constexpr node_type *pop_front() {
-      node_type *first = Head->Next;
-      this->connect(Head, Head->Next->Next);
+      node_type *first = Head->next();
+      this->connect(Head, Head->next()->next());
       return first;
     }
     //
@@ -95,16 +96,16 @@ namespace xsl::ls {
     node_type *Head;
     //
     constexpr node_type *insert(node_type *where, node_type *n) {
-      return this->connect(this->connect(where->Prev, n), where);
+      return this->connect(this->connect(where->prev(), n), where);
     }
     constexpr node_type *insert(node_type *where, node_type *head, node_type *tail) {
-      connect(where->Prev, head);
+      connect(where->prev(), head);
       return connect(tail, where);
     }
-    constexpr node_type *connect(node_type *Prev, node_type *Next) {
-      Prev->Next = Next;
-      Next->Prev = Prev;
-      return Next;
+    constexpr node_type *connect(node_type *prev(), node_type *next()) {
+      prev()->next() = next();
+      next()->prev() = prev();
+      return next();
     }
   };
 }  // namespace xsl::ls

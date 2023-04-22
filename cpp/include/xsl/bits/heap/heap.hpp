@@ -1,7 +1,5 @@
 #pragma once
-#include <cstddef>
 
-#include "xsl/bits/pf/def.h"
 #ifndef XSL_HEAP_SUPPORT
 #define XSL_HEAP_SUPPORT
 #include <xsl/bits/compare.hpp>
