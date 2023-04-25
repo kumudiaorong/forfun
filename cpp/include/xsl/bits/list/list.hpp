@@ -12,110 +12,114 @@
 // #include <xsl/bits/def.hpp>
 #include <xsl/bits/iterator.hpp>
 // #include <xsl/bits/utility.hpp>
-namespace xsl::ls {
-  //
-  template <typename _Val, typename _Alloc>
-  class list;
+namespace xsl {
+  namespace ls {
+    //
+    template <typename _Val, typename _Alloc>
+    class list;
 
-  template <class _Val>
-  class list_node {
-  public:
-    using val_type = _Val;
-    // neighbor
-    constexpr list_node()
-      : Val()
-      , Prev()
-      , Next() {
-    }
-    //
-    template <typename Arg, typename... Args, ts::enable_construct<list_node, Arg> = 0>
-    constexpr list_node(Arg&& param, Args&&...params)
-      : Val(forward<Arg>(param), forward<Args>(params)...)
-      , Prev()
-      , Next() {
-    }
-    //
-    constexpr list_node(const list_node& ano)
-      : Val(ano.Val)
-      , Prev(ano.Prev)
-      , Next(ano.Next) {
-    }
-    //
-    constexpr val_type& operator*() {
-      return Val;
-    }
-    //
-    constexpr const val_type& operator*() const {
-      return Val;
-    }
-    //
-    val_type Val;
-    list_node *Prev, *Next;
-  };
-}  // namespace xsl::ls
-namespace xsl::ls {
-  template <class _List>
-  class list_iter;
-  template <template <class, class> class _List, class _Node, class _Alloc>
-  class list_iter<_List<_Node, _Alloc>> {
-  public:
-    // clang-format off
+    template <class _Val>
+    class list_node {
+    public:
+      using val_type = _Val;
+      // neighbor
+      constexpr list_node()
+        : Val()
+        , Prev()
+        , Next() {
+      }
+      //
+      template <typename Arg, typename... Args, ts::enable_construct<list_node, Arg> = 0>
+      constexpr list_node(Arg&& param, Args&&...params)
+        : Val(forward<Arg>(param), forward<Args>(params)...)
+        , Prev()
+        , Next() {
+      }
+      //
+      constexpr list_node(const list_node& ano)
+        : Val(ano.Val)
+        , Prev(ano.Prev)
+        , Next(ano.Next) {
+      }
+      //
+      constexpr list_node *prev() {
+        return Prev;
+      }
+      //
+      constexpr list_node *next() {
+        return Next;
+      }
+      constexpr val_type& operator*() {
+        return Val;
+      }
+      //
+      constexpr const val_type& operator*() const {
+        return Val;
+      }
+      //
+      val_type Val;
+      list_node *Prev, *Next;
+    };
+    template <class _List>
+    class list_iter;
+    template <template <class, class> class _List, class _Node, class _Alloc>
+    class list_iter<_List<_Node, _Alloc>> {
+    public:
+      // clang-format off
     typedef _List<_Node, _Alloc>          list_type;
     typedef typename list_type::val_type  val_type;
     typedef typename list_type::node_type node_type;
     typedef typename list_type::size_type size_type;
-    // clang-format on
-    constexpr list_iter(node_type *ptr)
-      : Ptr(ptr) {
-    }
-    //
-    constexpr list_iter(list_iter&&) = default;
-    //
-    constexpr list_iter(const list_iter&) = default;
-    //
-    constexpr list_iter& operator=(list_iter&&) = default;
-    //
-    constexpr list_iter& operator=(const list_iter&) = default;
-    //
-    constexpr val_type& operator*() const {
-      return **Ptr;
-    }
-    //
-    constexpr val_type *operator->() const {
-      return addr(**Ptr);
-    }
-    //
-    constexpr bool operator==(const list_iter& Ano) const {
-      return Ptr == Ano.Ptr;
-    }
-    //
-    constexpr list_iter& operator++() {
-      Ptr = Ptr->Next;
-      return *this;
-    }
-    //
-    constexpr list_iter& operator--() {
-      Ptr = Ptr->Prev;
-      return *this;
-    }
-    //
-  private:
-    friend class _List<_Node, _Alloc>;
-    friend class list_iter<const _List<_Node, _Alloc>>;
-    friend void itor::swap(const list_iter&, const list_iter&);
-    node_type *Ptr;
-  };
-}  // namespace xsl::ls
-namespace xsl::itor {
+      // clang-format on
+      constexpr list_iter(node_type *ptr)
+        : Ptr(ptr) {
+      }
+      //
+      constexpr list_iter(list_iter&&) = default;
+      //
+      constexpr list_iter(const list_iter&) = default;
+      //
+      constexpr list_iter& operator=(list_iter&&) = default;
+      //
+      constexpr list_iter& operator=(const list_iter&) = default;
+      //
+      constexpr val_type& operator*() const {
+        return **Ptr;
+      }
+      //
+      constexpr val_type *operator->() const {
+        return addr(**Ptr);
+      }
+      //
+      constexpr bool operator==(const list_iter& Ano) const {
+        return Ptr == Ano.Ptr;
+      }
+      //
+      constexpr list_iter& operator++() {
+        Ptr = Ptr->Next;
+        return *this;
+      }
+      //
+      constexpr list_iter& operator--() {
+        Ptr = Ptr->Prev;
+        return *this;
+      }
+      //
+    private:
+      friend class _List<_Node, _Alloc>;
+      friend class list_iter<const _List<_Node, _Alloc>>;
+      friend void iter_swap(const list_iter&, const list_iter&);
+      node_type *Ptr;
+    };
+  }  // namespace ls
   template <class List>
-  void swap(const ls::list_iter<List> l, const ls::list_iter<List> r) {
+  void iter_swap(const ls::list_iter<List> l, const ls::list_iter<List> r) {
     xsl::swap(l.Ptr->Prev->Next, r.Ptr->Prev->Next);
     xsl::swap(l.Ptr->Next->Prev, r.Ptr->Next->Prev);
     xsl::swap(l.Ptr->Prev, r.Ptr->Prev);
     xsl::swap(l.Ptr->Next, r.Ptr->Next);
   }
-}  // namespace xsl::itor
-
+}  // namespace xsl
 namespace xsl::ls {
   template <template <class, class> class _List, class _Node, class _Alloc>
   class list_iter<const _List<_Node, _Alloc>> {
@@ -498,6 +502,12 @@ namespace xsl::ls {
       ++first;
       size_type count{1};
       while(first != last) {
+        node_type *ptr = nullptr;
+        try {
+          ptr = Alc.allocate(sizeof(node_type));
+        } catch(...) {
+          
+        }
         tail = Mng.connect(tail, construct_at(Alc.allocate(sizeof(node_type)), *first));
         ++first;
         ++count;

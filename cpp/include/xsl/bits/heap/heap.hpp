@@ -1,5 +1,6 @@
 #pragma once
 
+#include "xsl/bits/exception.hpp"
 #ifndef XSL_HEAP_SUPPORT
 #define XSL_HEAP_SUPPORT
 #include <xsl/bits/compare.hpp>
@@ -11,11 +12,11 @@ namespace xsl::hp {
   class heap {
   public:
     // clang-format off
-    typedef _Ctr ctr_type;
-    typedef typename _Ctr::val_type val_type;
-    typedef _Comp comp_pre;
-    typedef typename ctr_type::iter iter;
-    typedef typename ctr_type::diff_type diff_type;
+    typedef _Ctr                          ctr_type;
+    typedef typename _Ctr::val_type       val_type;
+    typedef _Comp                         comp_pre;
+    typedef typename ctr_type::iter       iter;
+    typedef typename ctr_type::diff_type  diff_type;
     // clang-format on
     ctr_type Ctr;
   private:
@@ -30,7 +31,7 @@ namespace xsl::hp {
       return 2 * (par + 1);
     }
     constexpr void adjust_up(iter chd) {
-      auto ccmp = comp::get_val(*chd);
+      auto ccmp = comp::get_val(*chd);  // get comp value of child
       auto b = Ctr.begin();
       while(chd != b) {
         iter par = b + parent(chd - b);
@@ -47,15 +48,17 @@ namespace xsl::hp {
       while(true) {
         diff_type pp = par - b;
         diff_type mp = lchild(pp);
-        if(mp >= size)
+        if(mp >= size)  // if no child
           break;
         diff_type rp = rchild(pp);
-        if(rp < size && Comp(comp::get_val(*(b + rp)), comp::get_val(*(b + mp))))
+        if(rp < size
+           && Comp(
+             comp::get_val(*(b + rp)), comp::get_val(*(b + mp))))  // if has right child and right child is priority
           mp = rp;
         iter mch = b + mp;
-        if(Comp(comp::get_val(*par), comp::get_val(*mch)))
+        if(Comp(comp::get_val(*par), comp::get_val(*mch)))  // if parent is priority
           break;
-        swap(*par, *mch);
+        swap(*par, *mch);                                   // else swap parent and child
         par = mch;
       }
     }
@@ -69,7 +72,7 @@ namespace xsl::hp {
       adjust_up(--Ctr.end());
     }
     constexpr void pop() {
-      itor::swap(Ctr.begin(), --Ctr.end());
+      iter_swap(Ctr.begin(), --Ctr.end());
       Ctr.pop_back();
       adjust_down(Ctr.begin());
     }
@@ -81,4 +84,4 @@ namespace xsl::hp {
     }
   };
 }  // namespace xsl::hp
-#endif  // !XSL_LIST
+#endif  // !XSL_HEAP_SUPPORT

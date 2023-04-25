@@ -48,7 +48,7 @@ namespace xsl::ls {
     constexpr node_type *clear() {
       XSL_EMPTY_CHECK(this->invalid());
       if(Head->next() != Head) {
-        Head->prev()->next() = nullptr;
+        this->connect(Head->prev(), Head->next());
         node_type *first = Head->next();
         Head->prev() = Head->next() = Head;
         return first;
@@ -57,9 +57,9 @@ namespace xsl::ls {
     }
     //
     constexpr node_type *remove(node_type *ptr) {
-      node_type *nex = ptr->next();
+      node_type *next = ptr->next();
       this->connect(ptr->prev(), ptr->next());
-      return nex;
+      return next;
     }
     //
     constexpr void erase(node_type *first, node_type *last) {
@@ -77,13 +77,13 @@ namespace xsl::ls {
     //
     constexpr node_type *pop_back() {
       node_type *last = Head->prev();
-      this->connect(Head->prev()->prev(), Head);
+      this->connect(last->prev(), Head);
       return last;
     }
     //
     constexpr node_type *pop_front() {
       node_type *first = Head->next();
-      this->connect(Head, Head->next()->next());
+      this->connect(Head, first->next());
       return first;
     }
     //
@@ -102,10 +102,10 @@ namespace xsl::ls {
       connect(where->prev(), head);
       return connect(tail, where);
     }
-    constexpr node_type *connect(node_type *prev(), node_type *next()) {
-      prev()->next() = next();
-      next()->prev() = prev();
-      return next();
+    constexpr node_type *connect(node_type *prev, node_type *next) {
+      prev->next() = next;
+      next->prev() = prev;
+      return next;
     }
   };
 }  // namespace xsl::ls

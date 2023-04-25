@@ -14,7 +14,8 @@
 // #include <xsl/bits/ranges/vlr.hpp>
 #include <queue>
 #include <tuple>
-#include <xsl/bits/heap/test.hpp>
+// #include <xsl/bits/heap/test.hpp>
+#include <vector>
 #include <xsl/heap.hpp>
 #include <xsl/vector.hpp>
 using namespace xsl;
@@ -30,7 +31,7 @@ public:
 // #include <random>
 
 int main() {
-  test::xsl_test_heap();
+  // test::xsl_test_heap();
   // test::xsl_test_list();
   // test::xsl_test_vector();
   // vector<test::test_p> vec{};
