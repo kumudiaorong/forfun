@@ -4,6 +4,7 @@
 #include <xsl/bits/allocator.hpp>
 #include <xsl/bits/def.hpp>
 #include <xsl/bits/ts/notp.hpp>
+#include <xsl/bits/ts/ts.hpp>
 #include <xsl/bits/tuple/tuple.hpp>
 // please complete the notes
 namespace xsl::fn {
@@ -32,12 +33,12 @@ namespace xsl::fn {
     // clang-format on
   public:
     template <class _Callee_, class _Arg_, class... _Args_>
-    constexpr explicit binder(_Callee_&& callee, _Arg_&& arg, _Args_&&...args)// -> binder<_Callee_, _Arg_, _Args_...>
+    constexpr explicit binder(_Callee_&& callee, _Arg_&& arg, _Args_&&...args)  // -> binder<_Callee_, _Arg_, _Args_...>
       : Callee(forward<_Callee_>(callee))
       , Package(forward<_Arg_>(arg), forward<_Args_>(args)...) {
     }
-    template <class _Callee_, ts::enable_construct<binder, _Callee_> = 0>// -> binder<_Callee_>
-    constexpr explicit binder(_Callee_&& callee)// -> binder<_Callee_>
+    template <class _Callee_, ts::enable_construct<binder, _Callee_> = 0>  // -> binder<_Callee_>
+    constexpr explicit binder(_Callee_&& callee)                           // -> binder<_Callee_>
       : Callee(forward<_Callee_>(callee))
       , Package() {
     }
@@ -49,7 +50,8 @@ namespace xsl::fn {
     // ts::nt::make_index_sequence<sizeof...(_Args)>{}, MixSeq{}, tuple(tag_store{}, forward<Unbound>(unbound)...)))
     {
       return Call(func_type{},
-        ts::nt::remove_front<ts::nt::make_index_sequence<sizeof...(_Args)>, ts::is::member_func_ptr<_Callee>>{},//if member function, remove the first index
+        ts::nt::remove_front<ts::nt::make_index_sequence<sizeof...(_Args)>,
+          ts::is::member_func_ptr<_Callee>>{},  // if member function, remove the first index
         mix_seq_type{}, tpl::tuple(tag_store{}, forward<Unbound>(unbound)...));
     }
     //   protected:
@@ -73,7 +75,7 @@ namespace xsl::fn {
   };
   namespace impl {
     template <class Arg>
-    using binder_forward_type_process = ts::conditional<is_wrraper<Arg>, ts::tp::get_type<Arg>, ts::decay<Arg>>;
+    using binder_forward_type_process = ts::conditional_apply<!is_wrraper<Arg>, ts::decay, ts::tp::get_type<Arg>>;
   }  // namespace impl
   template <class Callee, class... Args>
   binder(Callee, Args...)

@@ -1,13 +1,15 @@
 #pragma once
+#include "xsl/bits/utility.hpp"
 #ifndef XSL_LIST_SUPPORT
 #define XSL_LIST_SUPPORT
 #include <xsl/bits/allocator.hpp>
 #include <xsl/bits/batch.hpp>
+#include <xsl/bits/exception.hpp>
 #include <xsl/bits/list/lsm.hpp>
+#include <xsl/bits/node.hpp>
+#include <xsl/bits/pair.hpp>
 #include <xsl/bits/ts/is.hpp>
 #include <xsl/bits/ts/rm.hpp>
-#include <xsl/bits/tuple/tuple.hpp>
-
 // #include <xsl/bits/compare.hpp>
 // #include <xsl/bits/def.hpp>
 #include <xsl/bits/iterator.hpp>
@@ -21,44 +23,55 @@ namespace xsl {
     template <class _Val>
     class list_node {
     public:
-      using val_type = _Val;
+      //clang-format off
+      typedef _Val val_type;
+      //clang-format on
+      val_type Val;
+      list_node *Next[2];
+
+      template <class Alloc>
+      static list_node *Alc(Alloc& alc) {
+        list_node *ptr = alc.allocate(sizeof(list_node));
+        ptr->Next[0] = ptr->Next[1] = ptr->Next[2] = nullptr;
+        return ptr;
+      }
+      template <class Alloc, class... Args>
+      static list_node *New(Alloc& alc, Args&&...args) {
+        list_node *ptr = alc.allocate(sizeof(list_node));
+        try {
+          construct_at(addr(ptr->Val), forward<Args>(args)...);
+        } catch(ecp::exception& e) {
+          alc.deallocate(ptr);
+          throw e;
+        }
+        ptr->Next[0] = ptr->Next[1] = nullptr;
+        return ptr;
+      }
+
       // neighbor
       constexpr list_node()
         : Val()
-        , Prev()
         , Next() {
       }
       //
-      template <typename Arg, typename... Args, ts::enable_construct<list_node, Arg> = 0>
-      constexpr list_node(Arg&& param, Args&&...params)
-        : Val(forward<Arg>(param), forward<Args>(params)...)
-        , Prev()
-        , Next() {
+      constexpr list_node(const list_node& ano) = default;
+      //
+      constexpr list_node *& prev() {
+        return this->Next[0];
       }
       //
-      constexpr list_node(const list_node& ano)
-        : Val(ano.Val)
-        , Prev(ano.Prev)
-        , Next(ano.Next) {
+      constexpr list_node *& next() {
+        return this->Next[1];
       }
       //
-      constexpr list_node *prev() {
-        return Prev;
-      }
-      //
-      constexpr list_node *next() {
-        return Next;
-      }
       constexpr val_type& operator*() {
-        return Val;
+        return this->Val;
       }
       //
       constexpr const val_type& operator*() const {
-        return Val;
+        return this->Val;
       }
       //
-      val_type Val;
-      list_node *Prev, *Next;
     };
     template <class _List>
     class list_iter;
@@ -96,12 +109,12 @@ namespace xsl {
       }
       //
       constexpr list_iter& operator++() {
-        Ptr = Ptr->Next;
+        Ptr = Ptr->next();
         return *this;
       }
       //
       constexpr list_iter& operator--() {
-        Ptr = Ptr->Prev;
+        Ptr = Ptr->prev();
         return *this;
       }
       //
@@ -114,10 +127,10 @@ namespace xsl {
   }  // namespace ls
   template <class List>
   void iter_swap(const ls::list_iter<List> l, const ls::list_iter<List> r) {
-    xsl::swap(l.Ptr->Prev->Next, r.Ptr->Prev->Next);
-    xsl::swap(l.Ptr->Next->Prev, r.Ptr->Next->Prev);
-    xsl::swap(l.Ptr->Prev, r.Ptr->Prev);
-    xsl::swap(l.Ptr->Next, r.Ptr->Next);
+    xsl::swap(l.Ptr->prev()->next(), r.Ptr->prev()->next());
+    xsl::swap(l.Ptr->next()->prev(), r.Ptr->next()->prev());
+    xsl::swap(l.Ptr->prev(), r.Ptr->prev());
+    xsl::swap(l.Ptr->next(), r.Ptr->next());
   }
 }  // namespace xsl
 namespace xsl::ls {
@@ -159,12 +172,12 @@ namespace xsl::ls {
     }
     //
     constexpr list_iter& operator++() {
-      Ptr = Ptr->Next;
+      Ptr = Ptr->next();
       return *this;
     }
     //
     constexpr list_iter& operator--() {
-      Ptr = Ptr->Prev;
+      Ptr = Ptr->prev();
       return *this;
     }
   private:
@@ -176,18 +189,20 @@ namespace xsl::ls {
   class list {
   public:
     // clang-format off
-	typedef _Val 												                      val_type;
-	typedef size_t 												                    size_type;
-	typedef list_node<val_type> 								              node_type;
-	typedef typename _Alloc::template rebind_alloc<node_type>	alloc_type;
-	typedef lsm<node_type> 							                      mng_type;
-	typedef list_iter<list> 								                  iter;
-	typedef list_iter<const list> 								            citer;
-	typedef itor::reverse<iter> 								              riter;
-	typedef itor::reverse<citer> 							                criter;
-  typedef tpl::tuple<node_type*,node_type*,size_type>      list_description_type;
+  	typedef _Val 												                      val_type;
+  	typedef size_t 												                    size_type;
+  	typedef list_node<val_type> 								              node_type;
+  	typedef typename _Alloc::template rebind_alloc<node_type>	alloc_type;
+  	typedef lsm<node_type> 							                      mng_type;
+  	typedef list_iter<list> 								                  iter;
+	  typedef list_iter<const list> 								            citer;
+	  typedef itor::reverse<iter> 								              riter;
+	  typedef itor::reverse<citer> 							                criter;
     // clang-format on
   protected:
+    // clang-format off
+    typedef pair<node_type*, size_type>      list_decription_type;//head, size
+    // clang-format on
     alloc_type Alc;
     mng_type Mng;
     size_type Size;
@@ -233,7 +248,7 @@ namespace xsl::ls {
     //
     constexpr ~list() {
       if(!invalid()) {
-        Erase(Mng.Head->Next, Mng.Head);
+        Erase(Mng.Head->next(), Mng.Head);
         Alc.deallocate(Mng.Head);
       }
     }
@@ -267,7 +282,7 @@ namespace xsl::ls {
     // #endif // _DEBUG
     constexpr list& assign(list&& ano) {
       if(!this->invalid()) {
-        this->Erase(Mng.Head->Next, Mng.Head);
+        this->Erase(Mng.Head->next(), Mng.Head);
         Alc.deallocate(Mng.Head);
       }
       Alc = as_rreference(ano.Alc);
@@ -282,32 +297,32 @@ namespace xsl::ls {
     //
     constexpr val_type& front() {
       ecp::check_empty_object(invalid());
-      return Mng.Head->Next->Val;
+      return Mng.Head->next()->Val;
     }
     //
     constexpr const val_type& front() const {
       ecp::check_empty_object(invalid());
-      return Mng.Head->Next->Val;
+      return Mng.Head->next()->Val;
     }
     //
     constexpr val_type& back() {
       ecp::check_empty_object(invalid());
-      return Mng.Head->Prev->Val;
+      return Mng.Head->prev()->Val;
     }
     //
     constexpr const val_type& back() const {
       ecp::check_empty_object(invalid());
-      return Mng.Head->Prev->Val;
+      return Mng.Head->prev()->Val;
     }
     //
     constexpr iter begin() {
       ecp::check_empty_object(invalid());
-      return Mng.Head->Next;
+      return Mng.Head->next();
     }
     //
     constexpr citer begin() const {
       ecp::check_empty_object(invalid());
-      return Mng.Head->Next;
+      return Mng.Head->next();
     }
     //
     constexpr iter end() {
@@ -322,12 +337,12 @@ namespace xsl::ls {
     //
     constexpr riter rbegin() {
       ecp::check_empty_object(invalid());
-      return iter{Mng.Head->Prev};
+      return iter{Mng.Head->prev()};
     }
     //
     constexpr criter rbegin() const {
       ecp::check_empty_object(invalid());
-      return citer{Mng.Head->Prev};
+      return citer{Mng.Head->prev()};
     }
     //
     constexpr riter rend() {
@@ -343,7 +358,7 @@ namespace xsl::ls {
     // #endif//_DEBUG
     constexpr citer cbegin() const {
       ecp::check_empty_object(invalid());
-      return Mng.Head->Next;
+      return Mng.Head->next();
     }
     //
     constexpr citer cend() const {
@@ -353,7 +368,7 @@ namespace xsl::ls {
     //
     constexpr criter crbegin() const {
       ecp::check_empty_object(invalid());
-      return citer{Mng.Head->Prev};
+      return citer{Mng.Head->prev()};
     }
     //
     constexpr criter crend() const {
@@ -376,28 +391,8 @@ namespace xsl::ls {
     //
     constexpr void clear() {
       ecp::check_empty_object(invalid());
-      this->erase(Mng.Head->Next, Mng.Head);
+      this->erase(Mng.Head->next(), Mng.Head);
     }
-    //
-    // #ifndef _DEBUG
-    //
-     // #define XSL_FILL_OPT_FOR_INSERT(ARG0,ARG1) \
-	constexpr void insert(citer where, size_type count XSL_ADD_COMMA(ARG0)) {	\
-		this->Insert(where.GPtr.Ptr, creator(count XSL_ADD_COMMA(ARG1)));		\
-	}
-    // XSL_FILL_OPT(2, XSL_FILL_OPT_FOR_INSERT, const val_type& Val, Val)
-    // #undef XSL_FILL_OPT_FOR_INSERT
-    //
-     // #define XSL_GROUP_TO_SAME_MCTR_FOR_INSERT(ARG0,ARG1)						\
-	template<class UCIter, enable<itor::is<UCIter>> = 0>		\
-	constexpr void insert(citer where, UCIter first, ARG0) {	\
-		this->Insert(where.GPtr.Ptr, creator(itor::get_unwrapped(first), ARG1));	\
-	}
-    // XSL_GROUP_TO_SAME_MCTR(2, XSL_GROUP_TO_SAME_MCTR_FOR_INSERT, UCIter last, size_type count,
-    // itor::get_unwrapped(last), count)
-    // #undef XSL_GROUP_TO_SAME_MCTR_FOR_INSERT
-    //
-    // #else
     //
     constexpr void insert(citer where, size_type count) {
       this->Insert(where.Ptr, Create(count));
@@ -438,33 +433,31 @@ namespace xsl::ls {
     }
     //
     constexpr void pop_back() {
-      this->Remove(Mng.Head->Prev);
+      this->Remove(Mng.Head->prev());
     }
     //
     template <typename... Args>
     constexpr void emplace_front(Args&&...params) {
-      this->Emplace(Mng.Head->Next, forward<Args>(params)...);
+      this->Emplace(Mng.Head->next(), forward<Args>(params)...);
     }
     //
     constexpr void pop_front() {
-      this->Remove(Mng.Head->Next);
+      this->Remove(Mng.Head->next());
     }
     //
     constexpr void resize(size_type newSize, const val_type& val) {
       if(Size < newSize)
         this->Insert(Mng.Head, Create(newSize - Size, val));
       else if(Size > newSize)
-        this->Erase(batch::jump(citer{Mng.Head->Next}, newSize).Ptr, Mng.Head);
+        this->Erase(batch::jump(citer{Mng.Head->next()}, newSize).Ptr, Mng.Head);
     }
     //
     constexpr void resize(size_type newSize) {
       if(Size < newSize)
         this->Insert(Mng.Head, Create(newSize - Size));
       else if(Size > newSize)
-        this->Erase(batch::jump(citer{Mng.Head->Next}, newSize).Ptr, Mng.Head);
+        this->Erase(batch::jump(citer{Mng.Head->next()}, newSize).Ptr, Mng.Head);
     }
-    //
-    // #endif // !_DEBUG
     //
     constexpr void swap(list& ano) {
       xsl::swap(Alc, ano.Alc);
@@ -472,92 +465,93 @@ namespace xsl::ls {
       Mng.swap(ano.Mng);
     }
     //
-  protected:
+  // protected:
     //
-    constexpr list& Assign(const list_description_type& ldt) {
+    constexpr list& Assign(const list_decription_type& l) {
       if(invalid()) {
-        Mng.reuse(Alc.allocate(sizeof(node_type)));
+        safe_throw([this] { Mng.reuse(Alc.allocate(sizeof(node_type))); }, l.first, l.first->prev());
       } else {
-        Erase(Mng.Head->Next, Mng.Head);
+        Erase(Mng.Head->next(), Mng.Head);
       }
-      Insert(Mng.Head, ldt);
+      Insert(Mng.Head, l);
       return *this;
     }
-    constexpr void Insert(node_type *where, const list_description_type& ldt) {
-      auto [h, t, s] = ldt;
-      Mng.insert(where, h, t);
+    constexpr void Insert(node_type *where, const list_decription_type& l) {
+      auto [h, s] = l;
+      Mng.insert(where, h, h->prev());
       Size += s;
     }
     template <class... Args>
     constexpr void Emplace(node_type *where, Args&&...params) {
-      node_type *ptr = Alc.allocate(sizeof(node_type));
-      construct_at(addr(ptr->Val), forward<Args>(params)...);
-      Mng.insert(where, ptr);
+      Mng.insert(where, node_type::New(Alc, forward<Args>(params)...));
       ++Size;
     }
     template <class CIter>
-    constexpr list_description_type Create(CIter first, CIter last) {
-      node_type *head = construct_at(Alc.allocate(sizeof(node_type)), *first);
+    constexpr list_decription_type Create(CIter first, CIter last) {
+      node_type *head = node_type::New(Alc, *first);
       node_type *tail = head;
       ++first;
       size_type count{1};
       while(first != last) {
-        node_type *ptr = nullptr;
-        try {
-          ptr = Alc.allocate(sizeof(node_type));
-        } catch(...) {
-          
-        }
-        tail = Mng.connect(tail, construct_at(Alc.allocate(sizeof(node_type)), *first));
+        safe_throw([this, &first, &tail] { tail = Mng.connect(tail, node_type::New(Alc, *first)); }, head, nullptr);
         ++first;
         ++count;
       }
-      return {head, tail, count};
+      head->prev() = tail;
+      return {head, count};
     }
     template <class CIter>
-    constexpr list_description_type Create(CIter first, size_type count) {
-      node_type *head = construct_at(Alc.allocate(sizeof(node_type)), *first);
+    constexpr list_decription_type Create(CIter first, size_type count) {
+      node_type *head = node_type::New(Alc, *first);
       node_type *tail = head;
       ++first;
       size_type cond = count;
       --cond;
       while(cond) {
-        tail = Mng.connect(tail, construct_at(Alc.allocate(sizeof(node_type)), *first));
+        safe_throw([this, &first, &tail] { tail = Mng.connect(tail, node_type::New(Alc, *first)); }, head, nullptr);
         ++first;
         --cond;
       }
-      return {head, tail, count};
+      head->prev() = tail;
+      return {head, count};
     }
-    constexpr list_description_type Create(size_type count) {
-      node_type *head = construct_at(Alc.allocate(sizeof(node_type)));
+    constexpr list_decription_type Create(size_type count) {
+      node_type *head = node_type::New(Alc);
       node_type *tail = head;
       size_type cond = count;
       --cond;
       while(cond) {
-        tail = Mng.connect(tail, construct_at(Alc.allocate(sizeof(node_type))));
+        safe_throw([this, &tail] { tail = Mng.connect(tail, node_type::New(Alc)); }, head, nullptr);
         --cond;
       }
-      return {head, tail, count};
+      head->prev() = tail;
+      return {head, count};
     }
-    constexpr list_description_type Create(size_type count, const val_type& val) {
-      node_type *head = construct_at(Alc.allocate(sizeof(node_type)), val);
+    constexpr list_decription_type Create(size_type count, const val_type& val) {
+      node_type *head = node_type::New(Alc, val);
       node_type *tail = head;
       size_type cond = count;
       --cond;
       while(cond) {
-        tail = Mng.connect(tail, construct_at(Alc.allocate(sizeof(node_type)), val));
+        safe_throw([this, &val, &tail] { tail = Mng.connect(tail, node_type::New(Alc, val)); }, head, nullptr);
         --cond;
       }
-      return {head, tail, count};
+      head->prev() = tail;
+      return {head, count};
+    }
+    constexpr size_type Destroy(node_type *first, node_type *last) {
+      size_type c = 0;
+      while(first != last) {
+        node_type *dp = first;
+        first = first->next();
+        Alc.deallocate(destruct_at(addr(*dp)));
+        ++c;
+      }
+      return c;
     }
     constexpr node_type *Erase(node_type *first, node_type *last) {
-      node_type *pre = first->Prev;
-      while(first != last) {
-        first = first->Next;
-        destruct_at(addr(first->Prev->Val));
-        Alc.deallocate(first->Prev);
-        --Size;
-      }
+      node_type *pre = first->prev();
+      Size -= this->Destroy(first, last);
       return Mng.connect(pre, last);
     }
     constexpr node_type *Remove(node_type *where) {
@@ -566,6 +560,15 @@ namespace xsl::ls {
       Alc.deallocate(where);
       --Size;
       return nex;
+    }
+    template <class Fn>
+    constexpr void safe_throw(Fn&& fn, node_type *first, node_type *last) {
+      try {
+        fn();
+      } catch(ecp::exception e) {
+        this->Destroy(first, last);
+        throw e;
+      }
     }
   };
 }  // namespace xsl::ls

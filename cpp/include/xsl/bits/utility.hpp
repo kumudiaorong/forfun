@@ -1,9 +1,12 @@
 #pragma once
+#include "xsl/bits/ts/def.hpp"
+#include "xsl/bits/ts/is.hpp"
 #ifndef XSL_UTILITY
 #define XSL_UTILITY
 #include <xsl/bits/def.hpp>
 #include <xsl/bits/ts/as.hpp>
 #include <xsl/bits/ts/rm.hpp>
+#include <xsl/bits/ts/ts.hpp>
 
 namespace xsl {
   // template <class T>
@@ -43,18 +46,24 @@ namespace xsl {
   // constexpr Val *deviate(Val *ptr, ptrdiff_t off) {
   //   return reinterpret_cast<Val *>((reinterpret_cast<char *>(ptr) + off));
   // }
+  struct tag_lref {};
+  struct tag_rref {};
+  struct tag_ori {};
 
   template <class T>
-  class wrapper : public ts::tp::_1<T> {
+  class wrapper {
   public:
+    // clang-format off
+    typedef T val_type;
+    // clang-format on
     constexpr wrapper(T ref)
-      : Ref(ref) {
+      : Val(ref) {
     }
-    constexpr operator T() {
-      return Ref;
+    constexpr decltype(auto) operator*() {
+      return static_cast<ts::conditional_apply<!ts::is::rref<val_type>, ts::as::lref, val_type>>(Val);
     }
   private:
-    T Ref;
+    T Val;
   };
 
   template <class T>

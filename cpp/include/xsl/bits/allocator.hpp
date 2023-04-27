@@ -22,8 +22,8 @@ namespace xsl {
   }
   //
   template <typename T, typename... Args>
-  constexpr T *construct_at(T *ptr, Args&&...args) {
-    return new(ptr) T(forward<Args>(args)...);
+  constexpr void construct_at(T *ptr, Args&&...args) {
+    new(ptr) T(forward<Args>(args)...);
   }
   //
   template <typename T, typename... _Args>
@@ -71,6 +71,21 @@ namespace xsl::alc {
     //
     constexpr val_type *allocate(size_type byteSize) {
       return xalloc<val_type>(byteSize);
+    }
+    //
+    template <class... Args>
+    constexpr val_type *construct(Args&&...args) {
+      val_type *ptr = xalloc<val_type>(sizeof(val_type));
+      if(ptr == nullptr) {
+        throw ecp::bad_alloc{};
+      }
+      try {
+        construct_at(ptr, forward<Args>(args)...);
+      } catch(ecp::exception e) {
+        xfree(ptr);
+        throw e;
+      }
+      return ptr;
     }
     //
     constexpr void deallocate(val_type *ptr) {

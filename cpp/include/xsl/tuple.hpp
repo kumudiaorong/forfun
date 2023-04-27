@@ -3,7 +3,7 @@
 #define XSL_TUPLE
 #include <xsl/bits/tuple/tuple.hpp>
 namespace xsl {
-  template <class... T>
-  using tuple = tpl::tuple<T...>;
+  using tpl::tuple;
+  using tpl::get;
 }
 #endif

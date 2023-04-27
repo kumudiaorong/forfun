@@ -86,13 +86,13 @@ namespace xsl::tree {
     class iter {
     public:
       // clang-format off
-	typedef itor::tag_bilateral 	        iter_category;
-	typedef typename _RB_Tree::val_type 	val_type;
-	typedef iter 							            mnr_type;
-	typedef iter 							            self_type;
-	typedef typename _RB_Tree::diff_type  diff_type;
-	typedef typename _RB_Tree::size_type 	size_type;
-	typedef typename _RB_Tree::node_type 	node_type;
+	    typedef itor::tag_bilateral 	        iter_category;
+	    typedef typename _RB_Tree::val_type 	val_type;
+	    typedef iter 							            mnr_type;
+	    typedef iter 							            self_type;
+	    typedef typename _RB_Tree::diff_type  diff_type;
+	    typedef typename _RB_Tree::size_type 	size_type;
+	    typedef typename _RB_Tree::node_type 	node_type;
       // clang-format on
       constexpr iter(node_type *ptr)
         : Ptr(ptr) {

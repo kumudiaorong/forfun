@@ -5,12 +5,17 @@
 #include <type_traits>
 #include <utility>
 
+#include "xsl/bits/def.hpp"
+#include "xsl/bits/utility.hpp"
+
 #define TEST_PROC_PRINT
 #include <xsl/bits/test.hpp>
 // #include <xsl/map.hpp>
 // #include <xsl/net.hpp>
 // #include <xsl/ranges.hpp>
 #include <list>
+// #include <xsl/bits/list/test.hpp>
+#include <xsl/tuple.hpp>
 // #include <xsl/bits/ranges/vlr.hpp>
 #include <queue>
 #include <tuple>
@@ -31,6 +36,12 @@ public:
 // #include <random>
 
 int main() {
+  // xsl::test::xsl_test_list();
+  test::test_p t0{0};
+
+  xsl::tuple t{tag_store{}, as_rreference(t0), 2, 3, 4};
+  test::test_p te = xsl::get<0>(t);
+
   // test::xsl_test_heap();
   // test::xsl_test_list();
   // test::xsl_test_vector();
