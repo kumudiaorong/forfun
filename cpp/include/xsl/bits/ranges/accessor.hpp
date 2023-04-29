@@ -32,38 +32,11 @@ namespace xsl::ranges {
     constexpr bool operator==(const acsr& ano) const {
       return Size == ano.Size && Val == ano.Val;
     }
-    const val_type& Val;
-    size_t Size;
-  };
-  template <class _Val>
-  class acsr<1, _Val> {
-  public:
-    typedef _Val val_type;
-    acsr(size_t count, const val_type& val)
-      : Val(val)
-      , Size(count) {
-    }
-    constexpr operator bool() const {
-      return Size > 0;
-    }
-    constexpr acsr& operator++() {
-      --Size;
-      return *this;
-    }
-    constexpr const val_type& operator*() {
-      return Val;
-    }
-    constexpr bool operator!=(const acsr& ano) const {
-      return Size != ano.Size || Val != ano.Val;
-    }
-    constexpr bool operator==(const acsr& ano) const {
-      return Size == ano.Size && Val == ano.Val;
-    }
-    const val_type& Val;
+    val_type Val;
     size_t Size;
   };
   template <class _Iter>
-  class acsr<2, _Iter> {
+  class acsr<1, _Iter> {
   public:
     // clang-format off
     typedef _Iter                                       iter_type;
@@ -95,7 +68,7 @@ namespace xsl::ranges {
   };
 
   template <class _Iter>
-  class acsr<3, _Iter> {
+  class acsr<2, _Iter> {
   public:
     // clang-format off
     typedef _Iter                                       iter_type;
@@ -124,7 +97,7 @@ namespace xsl::ranges {
     iter_type First, Last;
   };
   template <class SizeType, class T, ts::enable<ts::has::opeartor_simple_assignment<size_t, SizeType>> = 0>
-  acsr(SizeType, T&&) -> acsr<1, ts::decay<T>>;
+  acsr(SizeType, T&&) -> acsr<0, ts::decay<T>>;
   //
   // template <class SizeType, class T,
   // ts::enable<ts::has::opeartor_simple_assignment<size_t, SizeType> && ts::is::lref<T>> = 0>
@@ -132,18 +105,20 @@ namespace xsl::ranges {
   //
   template <class UCIter, class SizeType,
     ts::enable<itor::is<ts::decay<UCIter>> && ts::has::opeartor_simple_assignment<size_t, SizeType>> = 0>
-  acsr(UCIter, SizeType) -> acsr<2, ts::decay<UCIter>>;
+  acsr(UCIter, SizeType) -> acsr<1, ts::decay<UCIter>>;
   //
   template <class UCIter, ts::enable<itor::is<ts::decay<UCIter>>> = 0>
-  acsr(UCIter, UCIter) -> acsr<3 , ts::decay<UCIter>>;
+  acsr(UCIter, UCIter) -> acsr<2, ts::decay<UCIter>>;
   //
+}  // namespace xsl::ranges
+namespace xsl::ts::is {
   template <class T>
-  inline constexpr bool is_xsl_acsr = false;
+  inline constexpr bool xsl_acsr = false;
   //
   template <uint_8 Index, class T>
-  inline constexpr bool is_xsl_acsr<acsr<Index, T>> = true;
+  inline constexpr bool xsl_acsr<ranges::acsr<Index, T>> = true;
   //
   template <class T>
-  inline constexpr bool is_acsr = is_xsl_acsr<T>;
-}  // namespace xsl::ranges
+  inline constexpr bool acsr = xsl_acsr<T>;
+}  // namespace xsl::ts::is
 #endif  // !XSL_ACSR

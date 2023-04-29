@@ -1,19 +1,19 @@
 #pragma once
-#include "xsl/bits/utility.hpp"
 #ifndef XSL_LIST_SUPPORT
 #define XSL_LIST_SUPPORT
 #include <xsl/bits/allocator.hpp>
 #include <xsl/bits/batch.hpp>
 #include <xsl/bits/exception.hpp>
 #include <xsl/bits/list/lsm.hpp>
-#include <xsl/bits/node.hpp>
 #include <xsl/bits/pair.hpp>
 #include <xsl/bits/ts/is.hpp>
 #include <xsl/bits/ts/rm.hpp>
+#include <xsl/bits/ts/ts.hpp>
 // #include <xsl/bits/compare.hpp>
 // #include <xsl/bits/def.hpp>
 #include <xsl/bits/iterator.hpp>
-// #include <xsl/bits/utility.hpp>
+#include <xsl/bits/ranges/accessor.hpp>
+#include <xsl/bits/utility.hpp>
 namespace xsl {
   namespace ls {
     //
@@ -138,10 +138,10 @@ namespace xsl::ls {
   class list_iter<const _List<_Node, _Alloc>> {
   public:
     // clang-format off
-    typedef _List<_Node, _Alloc>          list_type;
-    typedef typename list_type::val_type  val_type;
-    typedef typename list_type::node_type node_type;
-    typedef typename list_type::size_type size_type;
+    typedef _List<_Node, _Alloc>                list_type;
+    typedef const typename list_type::val_type  val_type;
+    typedef typename list_type::node_type       node_type;
+    typedef typename list_type::size_type       size_type;
     // clang-format on
     constexpr list_iter(node_type *ptr)
       : Ptr(ptr) {
@@ -164,7 +164,7 @@ namespace xsl::ls {
     }
     //
     constexpr const val_type *operator->() const {
-      return &**Ptr;
+      return addr(**Ptr);
     }
     //
     constexpr bool operator==(const list_iter& Ano) const {
@@ -219,24 +219,24 @@ namespace xsl::ls {
     //
     constexpr list(size_type count, const val_type& val)
       : list() {
-      this->Insert(Mng.Head, Create(count, val));
+      this->Insert(Mng.Head, Create(ranges::acsr(count, wrap_ref(val))));
     }
     //
     template <class UCIter, ts::enable<itor::is<UCIter>> = 0>
     constexpr list(UCIter first, UCIter last)
       : list() {
-      this->Insert(Mng.Head, Create(itor::get_unwrapped(first), itor::get_unwrapped(last)));
+      this->Insert(Mng.Head, Create(ranges::acsr(itor::get_unwrapped(first), itor::get_unwrapped(last))));
     }
     //
     template <class UCIter, ts::enable<itor::is<UCIter>> = 0>
     constexpr list(UCIter first, size_type count)
       : list() {
-      this->Insert(Mng.Head, Create(itor::get_unwrapped(first), count));
+      this->Insert(Mng.Head, Create(ranges::acsr(itor::get_unwrapped(first), count)));
     }
     //
     constexpr list(const list& ano)
       : list() {
-      this->Insert(Mng.Head, Create(ano.begin(), ano.Size));
+      this->Insert(Mng.Head, Create(ranges::acsr(ano.begin(), ano.Size)));
     }
     //
     constexpr list(list&& ano)
@@ -258,7 +258,7 @@ namespace xsl::ls {
       return this->assign(as_rreference(ano));
     }
     constexpr list& operator=(const list& ano) {
-      return Assign(Create(ano.begin(), ano.Size));
+      return Assign(Create(ranges::acsr(ano.begin(), ano.Size)));
     }
     //
     constexpr list& assign(size_type count) {
@@ -266,17 +266,17 @@ namespace xsl::ls {
     }
     //
     constexpr list& assign(size_type count, const val_type& val) {
-      return Assign(Create(count, val));
+      return Assign(Create(ranges::acsr(count,wrap_ref(val))));
     }
     //
     template <class UCIter, ts::enable<itor::is<UCIter>> = 0>
     constexpr list& assign(UCIter first, UCIter last) {
-      return Assign(Create(itor::get_unwrapped(first), itor::get_unwrapped(last)));
+      return Assign(Create(ranges::acsr(itor::get_unwrapped(first), itor::get_unwrapped(last))));
     }
     // Ring-linked list
     template <class UCIter, ts::enable<itor::is<UCIter>> = 0>
     constexpr list& assign(UCIter first, size_type count) {
-      return Assign(Create(itor::get_unwrapped(first), count));
+      return Assign(Create(ranges::acsr(itor::get_unwrapped(first), count)));
     }
     //
     // #endif // _DEBUG
@@ -292,7 +292,7 @@ namespace xsl::ls {
     }
     //
     constexpr list& assign(const list& ano) {
-      return Assign(Create(ano.begin(), ano.Size));
+      return Assign(Create(ranges::acsr(ano.begin(), ano.Size)));
     }
     //
     constexpr val_type& front() {
@@ -399,17 +399,17 @@ namespace xsl::ls {
     }
     //
     constexpr void insert(citer where, size_type count, const val_type& val) {
-      this->Insert(where.Ptr, Create(count, val));
+      this->Insert(where.Ptr, Create(ranges::acsr(count, wrap_ref(val))));
     }
     //
     template <class UCIter, ts::enable<itor::is<UCIter>> = 0>
     constexpr void insert(citer where, UCIter first, UCIter last) {
-      this->Insert(where.Ptr, Create(itor::get_unwrapped(first), itor::get_unwrapped(last)));
+      this->Insert(where.Ptr, Create(ranges::acsr(itor::get_unwrapped(first), itor::get_unwrapped(last))));
     }
     //
     template <class UCIter, ts::enable<itor::is<UCIter>> = 0>
     constexpr void insert(citer where, UCIter first, size_type count) {
-      this->Insert(where.Ptr, Create(itor::get_unwrapped(first), count));
+      this->Insert(where.Ptr, Create(ranges::acsr(itor::get_unwrapped(first), count)));
     }
     //
     // #endif // _DEBUG
@@ -447,7 +447,7 @@ namespace xsl::ls {
     //
     constexpr void resize(size_type newSize, const val_type& val) {
       if(Size < newSize)
-        this->Insert(Mng.Head, Create(newSize - Size, val));
+        this->Insert(Mng.Head, Create(ranges::acsr(newSize - Size,wrap_ref(val))));
       else if(Size > newSize)
         this->Erase(batch::jump(citer{Mng.Head->next()}, newSize).Ptr, Mng.Head);
     }
@@ -465,7 +465,7 @@ namespace xsl::ls {
       Mng.swap(ano.Mng);
     }
     //
-  // protected:
+    // protected:
     //
     constexpr list& Assign(const list_decription_type& l) {
       if(invalid()) {
@@ -486,31 +486,16 @@ namespace xsl::ls {
       Mng.insert(where, node_type::New(Alc, forward<Args>(params)...));
       ++Size;
     }
-    template <class CIter>
-    constexpr list_decription_type Create(CIter first, CIter last) {
-      node_type *head = node_type::New(Alc, *first);
+    template <class Acsr, ts::enable<ts::is::acsr<Acsr>> = 0>
+    constexpr list_decription_type Create(Acsr&& acsr) {
+      node_type *head = node_type::New(Alc, *acsr);
       node_type *tail = head;
-      ++first;
+      ++acsr;
       size_type count{1};
-      while(first != last) {
-        safe_throw([this, &first, &tail] { tail = Mng.connect(tail, node_type::New(Alc, *first)); }, head, nullptr);
-        ++first;
+      while(acsr) {
+        safe_throw([this, &acsr, &tail] { tail = Mng.connect(tail, node_type::New(Alc, *acsr)); }, head, nullptr);
+        ++acsr;
         ++count;
-      }
-      head->prev() = tail;
-      return {head, count};
-    }
-    template <class CIter>
-    constexpr list_decription_type Create(CIter first, size_type count) {
-      node_type *head = node_type::New(Alc, *first);
-      node_type *tail = head;
-      ++first;
-      size_type cond = count;
-      --cond;
-      while(cond) {
-        safe_throw([this, &first, &tail] { tail = Mng.connect(tail, node_type::New(Alc, *first)); }, head, nullptr);
-        ++first;
-        --cond;
       }
       head->prev() = tail;
       return {head, count};
@@ -522,18 +507,6 @@ namespace xsl::ls {
       --cond;
       while(cond) {
         safe_throw([this, &tail] { tail = Mng.connect(tail, node_type::New(Alc)); }, head, nullptr);
-        --cond;
-      }
-      head->prev() = tail;
-      return {head, count};
-    }
-    constexpr list_decription_type Create(size_type count, const val_type& val) {
-      node_type *head = node_type::New(Alc, val);
-      node_type *tail = head;
-      size_type cond = count;
-      --cond;
-      while(cond) {
-        safe_throw([this, &val, &tail] { tail = Mng.connect(tail, node_type::New(Alc, val)); }, head, nullptr);
         --cond;
       }
       head->prev() = tail;

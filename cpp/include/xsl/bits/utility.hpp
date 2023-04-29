@@ -59,8 +59,11 @@ namespace xsl {
     constexpr wrapper(T ref)
       : Val(ref) {
     }
-    constexpr decltype(auto) operator*() {
-      return static_cast<ts::conditional_apply<!ts::is::rref<val_type>, ts::as::lref, val_type>>(Val);
+    constexpr operator ts::conditional_apply<!ts::is::rref<val_type>, ts::as::lref, val_type>() {
+      return Val;
+    }
+    constexpr operator const ts::conditional_apply<!ts::is::rref<val_type>, ts::as::lref, val_type>() const {
+      return Val;
     }
   private:
     T Val;

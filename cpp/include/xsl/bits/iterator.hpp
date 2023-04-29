@@ -125,12 +125,12 @@ namespace xsl {
     class reverse {
     public:
       // clang-format off
-	typedef std::weak_ordering 						      comp_category;
-	typedef reverse 			                      self_type;
-	typedef traits<_Iter> 									    traits_type;
-	typedef typename traits_type::iter_category iter_category;
-	typedef typename traits_type::val_type 			val_type;
-	typedef self_type 										      unwrap_type;
+	    typedef std::weak_ordering 						      comp_category;
+	    typedef reverse 			                      self_type;
+	    typedef traits<_Iter> 									    traits_type;
+	    typedef typename traits_type::iter_category iter_category;
+	    typedef typename traits_type::val_type 			val_type;
+	    typedef self_type 										      unwrap_type;
       // clang-format on
       constexpr reverse() = default;
       constexpr reverse(_Iter iter)
