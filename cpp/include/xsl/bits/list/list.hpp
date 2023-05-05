@@ -6,7 +6,7 @@
 #include <xsl/bits/exception.hpp>
 #include <xsl/bits/list/lsm.hpp>
 #include <xsl/bits/pair.hpp>
-#include <xsl/bits/ts/is.hpp>
+#include <xsl/bits/ts/is.hpp> 
 #include <xsl/bits/ts/rm.hpp>
 #include <xsl/bits/ts/ts.hpp>
 // #include <xsl/bits/compare.hpp>
