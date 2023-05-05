@@ -1,0 +1,19 @@
+[
+  {
+    "arguments": [
+      "/home/kmdr/tools/clang+llvm-15.0.6-x86_64-linux-gnu-ubuntu-18.04/bin/clang-15",
+      "-c",
+      "-std=c++20",
+      "-fcolor-diagnostics",
+      "-I",
+      "/home/kmdr/work/forfun/cpp/include",
+      "-g",
+      "/home/kmdr/work/forfun/cpp/main.cpp",
+      "-o",
+      "/home/kmdr/work/forfun/cpp/main"
+    ],
+    "directory": "/home/kmdr/work/forfun/cpp",
+    "file": "/home/kmdr/work/forfun/cpp/main.cpp",
+    "output": "/home/kmdr/work/forfun/cpp/main.o"
+  }
+]
