@@ -179,7 +179,7 @@ namespace xsl::ranges {
       }
       Alc.deallocate(Mng.Head);
     }
-    template <class... Args, ts::enable<is_acsr<decltype(ranges::acsr(ts::eval_type<Args>()...))>> = 0>
+    template <class... Args, ts::enable<ts::is::acsr<decltype(ranges::acsr(ts::eval_type<Args>()...))>> = 0>
     constexpr vlr& merge(Args&&...args) {
       typedef decltype(impl_vlr::vlr_node_storage(Alc, forward<Args>(args)...)) ins_type;
       Mng.push_back(
