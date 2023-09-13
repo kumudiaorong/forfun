@@ -1,7 +1,0 @@
-CompileFlags: # Tweak the parse settings
-  Compiler: clang # Change argv[0] of compile flags to `clang++`
-Diagnostics:
-  ClangTidy:
-    Remove: misc-definitions-in-headers
-InlayHints:
-  Designators: false
