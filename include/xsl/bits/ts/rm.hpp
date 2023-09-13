@@ -1,8 +1,8 @@
 #pragma once
 #ifndef XSL_TYPE_SUPPORT_REMOVE
 #define XSL_TYPE_SUPPORT_REMOVE
-#include <xsl/bits/def.hpp>
-#include <xsl/bits/ts/def.hpp>
+#include "../def.hpp"
+#include "def.hpp"
 namespace xsl::ts::rm {
   namespace impl {
     template <class T>

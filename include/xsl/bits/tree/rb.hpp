@@ -1,25 +1,19 @@
 #pragma once
 #ifndef XSL_RB_TREE
 #define XSL_RB_TREE
-#include <xsl/bits/allocator.hpp>
-#include <xsl/bits/ts/ts.hpp>
+#include "../allocator.hpp"
+#include "../ts/ts.hpp"
 // #include <xsl/bits/compare.hpp>
 // #include <xsl/bits/def.hpp>
-#include <xsl/bits/exception.hpp>
-#include <xsl/bits/iterator.hpp>
-#include <xsl/bits/pair.hpp>
+#include "../exception.hpp"
+#include "../iterator.hpp"
+#include "../pair.hpp"
 // #include <xsl/bits/pf/memory.hpp>
 // #include <xsl/bits/utility.hpp>
 
 namespace xsl::tree {
   namespace impl_rb {
     enum class color { Red, Black, Null };
-    // template<class _Ctr>
-    // void print_rb_tree(_Ctr& Ctr) {
-    // 	for (auto&& c : Ctr)
-    // 		std::cout << c->Val << ':' << (c->Color == rb_tree_color::Red ? "R\t" : "B\t");
-    // 	puts("");
-    // }
 
     template <class _Val>
     class node {
@@ -251,6 +245,7 @@ namespace xsl::tree {
       node_type *bound = node_lower_bound(Head->Next[2], comp::get_val(key));
       return bound != Head && lower_bound_equal(bound, key) ? bound : Head;
     }
+    
     // protected:
     // constexpr node_type* insert_unique(const val_type& Val) {
     //	auto key = Ek(Val);

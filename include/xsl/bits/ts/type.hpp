@@ -6,19 +6,33 @@
 
 namespace xsl::ts::tp {
   template <class T, class LMBD, class S, class V = void>
-  struct type_traits : _1<S> {};
+  class type_traits : public _1<S> {};
   //
   template <class T, class LMBD, class S>
-  struct type_traits<T, LMBD, S, _0<decltype(eval_type<LMBD>()(eval_type<T>()))>>
-    : _1<decltype(eval_type<LMBD>()(eval_type<T>()))> {};
-  // Dependent Templates	:eval_type
-  // Description			:T has member function opeartor*
-  // Example				:
-  // template<class T,class S>
-  // using get_one_type=type_traits<T,decltype([]<class U>(U)->typename U::one_type{}),S>::type;
-  // if type T has member type one_type, you will get it,or get type S;
+  class type_traits<T, LMBD, S, _0<decltype(eval_type<LMBD>()(eval_type<T>()))>>
+    : public _1<decltype(eval_type<LMBD>()(eval_type<T>()))> {};
+// Dependent Templates	:eval_type
+// Description			:T has member function opeartor*
+// Example				:
+// template<class T,class S>
+// using get_one_type=type_traits<T,decltype([]<class U>(U)->typename U::one_type{}),S>::type;
+// if type T has member type one_type, you will get it,or get type S;
+
+// template <class T>
+//   class _get_val_type :public _1<typename ts::tp::type_traits<T, decltype([]<class U>(U) -> typename U::val_type
+//   {}), T>::type> {}; template <class T> using get_val_type =typename _get_val_type<T>::type;
+// compile whit gcc
+#ifdef __GNUC__
+  template <class T>
+  class _get_val_type
+    : public _1<typename ts::tp::type_traits<T, decltype([]<class U>(U) -> typename U::val_type {}), T>::type> {};
+  template <class T>
+  using get_val_type = typename _get_val_type<T>::type;
+#elif defined(_MSC_VER)
+#elif defined(__clang__)
   template <class T>
   using get_val_type = typename ts::tp::type_traits<T, decltype([]<class U>(U) -> typename U::val_type {}), T>::type;
+#endif
   template <class T, class S = T>
   using get_type = typename ts::tp::type_traits<T, decltype([]<class U>(U) -> typename U::type {}), S>::type;
   namespace impl {

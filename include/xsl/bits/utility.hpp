@@ -1,12 +1,12 @@
 #pragma once
-#include "xsl/bits/ts/def.hpp"
-#include "xsl/bits/ts/is.hpp"
 #ifndef XSL_UTILITY
 #define XSL_UTILITY
-#include <xsl/bits/def.hpp>
-#include <xsl/bits/ts/as.hpp>
-#include <xsl/bits/ts/rm.hpp>
-#include <xsl/bits/ts/ts.hpp>
+#include "def.hpp"
+#include "ts/as.hpp"
+#include "ts/def.hpp"
+#include "ts/is.hpp"
+#include "ts/rm.hpp"
+#include "ts/ts.hpp"
 
 namespace xsl {
   // template <class T>

@@ -1,9 +1,9 @@
 #pragma once
 #ifndef XSL_TYPE_SUPPORT_AS
 #define XSL_TYPE_SUPPORT_AS
-#include <xsl/bits/def.hpp>
-#include <xsl/bits/ts/def.hpp>
-#include <xsl/bits/ts/rm.hpp>
+#include "../def.hpp"
+#include "def.hpp"
+#include "rm.hpp"
 
 namespace xsl::ts::as {
   template <class T>

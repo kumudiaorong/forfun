@@ -1,8 +1,8 @@
 #pragma once
 #ifndef XSL_TYPE_SUPPORT_IS
 #define XSL_TYPE_SUPPORT_IS
-#include <xsl/bits/def.hpp>
-#include <xsl/bits/ts/def.hpp>
+#include "../def.hpp"
+#include "../ts/def.hpp"
 namespace xsl::ts::is {
   template <class T>
   inline constexpr bool array = false;

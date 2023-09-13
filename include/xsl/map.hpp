@@ -1,8 +1,8 @@
 #pragma once
 #ifndef XSL_MAP
 #define XSL_MAP
-#include <xsl/bits/functor.hpp>
-#include <xsl/bits/tree/rb.hpp>
+#include "bits/functor.hpp"
+#include "bits/tree/rb.hpp"
 namespace xsl {
   namespace impl {
     template <class _Key, class _Val, class _Comp, class _Alloc>

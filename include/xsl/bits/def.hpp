@@ -1,7 +1,7 @@
 #ifndef XSL_BASE_DEF
 #define XSL_BASE_DEF
 // x standard library
-#include <xsl/bits/pf/def.h>
+#include "pf/def.h"
 namespace xsl {
   template <typename... Ts>
   inline constexpr void pass(Ts&&...) noexcept {

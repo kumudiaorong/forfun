@@ -5,7 +5,7 @@
 #include <xsl/bits/def.hpp>
 #include <xsl/bits/ts/has.hpp>
 #include <xsl/bits/ts/type.hpp>
-
+#include "ts/def.hpp"
 //
 namespace xsl::comp {
   template <class T>
@@ -21,7 +21,7 @@ namespace xsl::comp {
   namespace impl {
     template <class T>
     inline constexpr bool has_to_comp =
-      ts::has::some<decltype([]<class U>(U) -> decltype(eval_type<U>().to_comp(), 0) { return 0; }), ts::tp::_n<T>>;
+      ts::has::some<decltype([]<class U>(U) -> decltype(ts::eval_type<U>().to_comp(), 0) { return 0; }), ts::tp::_n<T>>;
     // Dependent Templates	:addition assignment
     // Description			:T has member function opeartor+=
     // Example				:

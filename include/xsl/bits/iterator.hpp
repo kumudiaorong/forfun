@@ -11,6 +11,9 @@
 #include <xsl/bits/ts/ts.hpp>
 #include <xsl/bits/utility.hpp>
 
+#include "ts/def.hpp"
+#include "ts/type.hpp"
+
 namespace xsl {
   //
   namespace itor {
@@ -103,7 +106,7 @@ namespace xsl {
     // gcc would not think using statement is a type,if using typedef,it would
     // become int
     //
-    template <class CheckedIter>
+    template <typename CheckedIter>
     struct traits {
       // clang-format off
 	typedef get_category<CheckedIter>	        iter_category;
@@ -201,7 +204,7 @@ namespace xsl {
 
     template <class CIter>
     inline constexpr bool has_to_unwrap =
-      ts::has::some<decltype([]<class T>(T) -> decltype(eval_type<T>().to_unwrap(), 0) { return 0; }),
+      ts::has::some<decltype([]<class T>(T) -> decltype(ts::eval_type<T>().to_unwrap(), 0) { return 0; }),
         ts::tp::_n<CIter>>;
     //
     template <class UCIter>
@@ -226,7 +229,7 @@ namespace xsl {
     }
   }  // namespace itor
   template <class Iter1, class Iter2,
-    ts::enable<ts::is::same<typename  itor::traits<Iter1>::val_type, typename itor::traits<Iter2>::val_type>> = 0>
+    ts::enable<ts::is::same<typename itor::traits<Iter1>::val_type, typename itor::traits<Iter2>::val_type>> = 0>
   constexpr void iter_swap(const Iter1& l, const Iter2& r) {
     xsl::swap(*l, *r);
   }

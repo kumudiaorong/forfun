@@ -1,7 +1,7 @@
 #pragma once
 #ifndef XSL_TYPE_SUPPORT_DEF
 #define XSL_TYPE_SUPPORT_DEF
-#include <xsl/bits/def.hpp>
+#include "../def.hpp"
 namespace xsl::ts {
   namespace tp {
     struct true_type {
@@ -14,7 +14,8 @@ namespace xsl::ts {
     using _0 = void;
     // Template unit
     template <class T>
-    struct _1 {
+    class _1 {
+    public:
       typedef T type;
       typedef _1 self;
     };

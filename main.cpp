@@ -5,24 +5,28 @@
 #include <type_traits>
 #include <utility>
 
-
 #define TEST_PROC_PRINT
-#include <xsl/bits/functional/function.hpp>
-#include <xsl/bits/test.hpp>
+// #include <xsl/bits/functional/function.hpp>
+// #include <xsl/bits/test.hpp>
 // #include <xsl/map.hpp>
 // #include <xsl/net.hpp>
 // #include <xsl/ranges.hpp>
-#include <list>
+// #include <list>
 // #include <xsl/bits/list/test.hpp>
-#include <xsl/tuple.hpp>
-#include <xsl/bits/list/test.hpp>
+// #include <xsl/tuple.hpp>
+// #include <xsl/bits/list/test.hpp>
 // #include <xsl/bits/ranges/vlr.hpp>
-#include <queue>
-#include <tuple>
+// #include <queue>
+// #include <tuple>
 // #include <xsl/bits/heap/test.hpp>
-#include <vector>
-#include <xsl/heap.hpp>
-#include <xsl/vector.hpp>
+// #include <vector>
+// #include <xsl/heap.hpp>
+// #include <xsl/bits/ts/type.hpp>
+// #include <xsl/vector.hpp>
+// #include <xsl/bits/compare.hpp>
+// #include "xsl/bits/tree/rb.hpp"
+#include "xsl/bits/ts/type.hpp"
+// #include "xsl/bits/iterator.hpp"
 using namespace xsl;
 template <class T>
 class tclass {
@@ -34,8 +38,29 @@ public:
   }
 };
 // #include <random>
+class test {
+public:
+  typedef int val_type;
+  int to_comp() {
+    return 0;
+  }
+};
+template <class T>
+using _get = ts::tp::get_val_type<T>;
+template <typename CheckedIter>
+class traits {
+  // clang-format off
+	typedef CheckedIter 							        self_type;
+	typedef _get<CheckedIter> val_type;
+	// typedef ts::tp::get_val_type<CheckedIter> _val_type;
+	// using __val_type = ts::tp::get_val_type<CheckedIter> ;
+  // clang-format on
+};
+typedef ts::tp::get_val_type<test> val_type;
 int main() {
-  xsl::test::xsl_test_list();
+  ts::tp::get_val_type<test> t0{};
+  // std::cout << boost::typeindex::type_id_with_cvr<decltype(t0)>().pretty_name() << std::endl;
+  // xsl::test::xsl_test_list();
   // test::test_p t0{0};
 
   // xsl::tuple t{tag_store{}, as_rreference(t0), 2, 3, 4};
